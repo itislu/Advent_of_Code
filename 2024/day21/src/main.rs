@@ -21,21 +21,7 @@ fn exercise1(input: &str) -> usize {
 
         for button in num_code {
             println!("cur: {:?}, button: {:?}", numpad.current, button);
-            let dir_code1 = numpad.press(button);
-            println!("lvl 1, len: {}, {:?}", dir_code1.len(), dir_code1);
-            let mut dirpad1 = DirPad::new();
-
-            for button in dir_code1 {
-                let dir_code2 = dirpad1.press(button);
-                println!("lvl 2, len: {}, {:?}", dir_code2.len(), dir_code2);
-                let mut dirpad2 = DirPad::new();
-
-                for button in dir_code2 {
-                    let dir_code3 = dirpad2.press(button);
-                    println!("lvl 3, len: {}, {:?}", dir_code3.len(), dir_code3);
-                    len += dir_code3.len();
-                }
-            }
+            len += control_dirpad(&numpad.press(button), 2);
         }
 
         println!("final len: {}\n", len);
@@ -50,6 +36,26 @@ TODO: Try what value I get with consistently applying Rule of Left.
 */
 fn exercise2(input: &str) -> usize {
     0
+}
+
+fn control_dirpad(dir_code: &[DirPadKey], indirections: u32) -> usize {
+    #[cfg(debug_assertions)]
+    println!(
+        "indirections: {:2}, len: {}, {:?}",
+        indirections,
+        dir_code.len(),
+        dir_code
+    );
+
+    if indirections == 0 {
+        return dir_code.len();
+    }
+    let mut len = 0;
+    let mut dirpad = DirPad::new();
+    for &button in dir_code {
+        len += control_dirpad(&dirpad.press(button), indirections - 1);
+    }
+    len
 }
 
 #[derive(PartialEq, Eq)]
