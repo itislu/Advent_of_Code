@@ -7,7 +7,7 @@ use utils::{input, parse};
 fn main() {
     let input = input::read_input();
     println!("exercise 1: {}", exercise1(&input));
-    // println!("exercise 2: {}", exercise2(&input));
+    println!("exercise 2: {}", exercise2(&input));
 }
 
 fn exercise1(input: &str) -> usize {
@@ -30,12 +30,24 @@ fn exercise1(input: &str) -> usize {
     res
 }
 
-/*
-Rule of Left only mattered at numpad level so far.
-TODO: Try what value I get with consistently applying Rule of Left.
-*/
 fn exercise2(input: &str) -> usize {
-    0
+    let mut res = 0;
+    let mut numpad = NumPad::new();
+
+    for line in input.lines() {
+        let mut len: usize = 0;
+        let num_code: Vec<NumPadKey> = line.chars().map(|c| NumPadKey::from(c)).collect();
+        println!("{:?}", num_code);
+
+        for button in num_code {
+            println!("cur: {:?}, button: {:?}", numpad.current, button);
+            len += control_dirpad(&numpad.press(button), 25);
+        }
+
+        println!("final len: {}\n", len);
+        res += len * parse::numbers::<usize>(line).next().unwrap();
+    }
+    res
 }
 
 fn control_dirpad(dir_code: &[DirPadKey], indirections: u32) -> usize {
@@ -398,10 +410,10 @@ mod test {
         assert_eq!(res, 126384);
     }
 
-    // #[test]
-    // fn test_ex2() {
-    //     let input = input::read_example();
-    //     let res = exercise2(&input);
-    //     println!("{}", res);
-    // }
+    #[test]
+    fn test_ex2() {
+        let input = input::read_example();
+        let res = exercise2(&input);
+        println!("{}", res);
+    }
 }
