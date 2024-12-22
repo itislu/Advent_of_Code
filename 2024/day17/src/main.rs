@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use utils::input;
+use utils::{input, parse};
 
 fn main() {
     let input = input::read_input();
@@ -45,7 +45,7 @@ struct Computer {
 impl Computer {
     fn new(input: &str) -> Self {
         let mut split_input = input.split("\n\n");
-        let registers = parse_numbers(split_input.nth(0).unwrap());
+        let registers: Vec<usize> = parse::numbers(split_input.nth(0).unwrap()).collect();
         let instr: Vec<usize> = split_input
             .nth(0)
             .unwrap()
@@ -181,24 +181,6 @@ impl Computer {
     fn output(&self) -> String {
         self.out.iter().join(",")
     }
-}
-
-fn parse_numbers(s: &str) -> Vec<i64> {
-    let mut numbers: Vec<i64> = Vec::new();
-    let mut current_number = String::new();
-
-    for c in s.chars() {
-        if c.is_ascii_digit() {
-            current_number.push(c);
-        } else if !current_number.is_empty() {
-            numbers.push(current_number.parse().unwrap());
-            current_number.clear();
-        }
-    }
-    if !current_number.is_empty() {
-        numbers.push(current_number.parse().unwrap());
-    }
-    numbers
 }
 
 #[cfg(test)]

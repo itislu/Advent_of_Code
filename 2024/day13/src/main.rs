@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use std::ops::{Add, Mul};
-use utils::input;
+use utils::{input, parse};
 
 const COST_A: i64 = 3;
 const COST_B: i64 = 1;
@@ -168,31 +168,16 @@ impl Mul<i64> for Position {
 
 fn parse_input(input: &str) -> impl Iterator<Item = (Button, Button, Position)> + '_ {
     input.split("\n\n").map(|block| {
-        let numbers: Vec<Vec<i64>> = block.lines().map(parse_numbers).collect();
+        let numbers: Vec<Vec<i64>> = block
+            .lines()
+            .map(|line| parse::numbers(line).collect())
+            .collect();
         (
             Button::new(numbers[0][0], numbers[0][1], 0, COST_A),
             Button::new(numbers[1][0], numbers[1][1], 0, COST_B),
             Position::new(numbers[2][0], numbers[2][1]),
         )
     })
-}
-
-fn parse_numbers(s: &str) -> Vec<i64> {
-    let mut numbers: Vec<i64> = Vec::new();
-    let mut current_number = String::new();
-
-    for c in s.chars() {
-        if c.is_ascii_digit() {
-            current_number.push(c);
-        } else if !current_number.is_empty() {
-            numbers.push(current_number.parse().unwrap());
-            current_number.clear();
-        }
-    }
-    if !current_number.is_empty() {
-        numbers.push(current_number.parse().unwrap());
-    }
-    numbers
 }
 
 #[cfg(test)]
