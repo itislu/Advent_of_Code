@@ -7,11 +7,11 @@ use utils::{input, parse};
 
 fn main() {
     let input = input::read_input();
-    println!("exercise 1: {}", exercise1(&input));
-    println!("exercise 2: {}", exercise2(&input));
+    println!("exercise 1: {}", exercise(&input, 2));
+    println!("exercise 2: {}", exercise(&input, 25));
 }
 
-fn exercise1(input: &str) -> usize {
+fn exercise(input: &str, indirections: u32) -> usize {
     let mut res = 0;
     let mut numpad = NumPad::new();
     let mut cache: HashMap<(DirPadKey, DirPadKey, u32), usize> = HashMap::new();
@@ -22,29 +22,8 @@ fn exercise1(input: &str) -> usize {
         println!("{:?}", num_code);
 
         for button in num_code {
-            println!("cur: {:?}, button: {:?}", numpad.current, button);
-            len += control_dirpad(&numpad.press(button), &mut cache, 2);
-        }
-
-        println!("final len: {}\n", len);
-        res += len * parse::numbers::<usize>(line).next().unwrap();
-    }
-    res
-}
-
-fn exercise2(input: &str) -> usize {
-    let mut res = 0;
-    let mut numpad = NumPad::new();
-    let mut cache: HashMap<(DirPadKey, DirPadKey, u32), usize> = HashMap::new();
-
-    for line in input.lines() {
-        let mut len: usize = 0;
-        let num_code: Vec<NumPadKey> = line.chars().map(|c| NumPadKey::from(c)).collect();
-        println!("{:?}", num_code);
-
-        for button in num_code {
-            println!("cur: {:?}, button: {:?}", numpad.current, button);
-            len += control_dirpad(&numpad.press(button), &mut cache, 25);
+            println!("cur: {:?}, target: {:?}", numpad.current, button);
+            len += control_dirpad(&numpad.press(button), &mut cache, indirections);
         }
 
         println!("final len: {}\n", len);
@@ -71,13 +50,16 @@ fn control_dirpad(
     }
     let mut len = 0;
     let mut dirpad = DirPad::new();
-    
+
     for &button in dir_code {
         if let Some(cached_len) = cache.get(&(dirpad.current, button, indirections - 1)) {
             #[cfg(debug_assertions)]
             println!(
                 "CACHE HIT: (cur: {}, target: {}, indirections: {}), len: {}",
-                dirpad.current, button, indirections - 1, cached_len
+                dirpad.current,
+                button,
+                indirections - 1,
+                cached_len
             );
             dirpad.current = button;
             len += cached_len;
@@ -427,14 +409,14 @@ mod test {
     #[test]
     fn test_ex1() {
         let input = input::read_example();
-        let res = exercise1(&input);
+        let res = exercise(&input, 2);
         assert_eq!(res, 126384);
     }
 
     #[test]
     fn test_ex2() {
         let input = input::read_example();
-        let res = exercise2(&input);
+        let res = exercise(&input, 25);
         println!("{}", res);
     }
 }
