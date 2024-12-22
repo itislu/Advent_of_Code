@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     fmt,
     ops::{Add, Sub},
 };
@@ -13,6 +14,7 @@ fn main() {
 fn exercise1(input: &str) -> usize {
     let mut res = 0;
     let mut numpad = NumPad::new();
+    let mut cache: HashMap<(DirPadKey, DirPadKey, u32), usize> = HashMap::new();
 
     for line in input.lines() {
         let mut len: usize = 0;
@@ -21,7 +23,7 @@ fn exercise1(input: &str) -> usize {
 
         for button in num_code {
             println!("cur: {:?}, button: {:?}", numpad.current, button);
-            len += control_dirpad(&numpad.press(button), 2);
+            len += control_dirpad(&numpad.press(button), &mut cache, 2);
         }
 
         println!("final len: {}\n", len);
@@ -33,6 +35,7 @@ fn exercise1(input: &str) -> usize {
 fn exercise2(input: &str) -> usize {
     let mut res = 0;
     let mut numpad = NumPad::new();
+    let mut cache: HashMap<(DirPadKey, DirPadKey, u32), usize> = HashMap::new();
 
     for line in input.lines() {
         let mut len: usize = 0;
@@ -41,7 +44,7 @@ fn exercise2(input: &str) -> usize {
 
         for button in num_code {
             println!("cur: {:?}, button: {:?}", numpad.current, button);
-            len += control_dirpad(&numpad.press(button), 25);
+            len += control_dirpad(&numpad.press(button), &mut cache, 25);
         }
 
         println!("final len: {}\n", len);
@@ -50,7 +53,11 @@ fn exercise2(input: &str) -> usize {
     res
 }
 
-fn control_dirpad(dir_code: &[DirPadKey], indirections: u32) -> usize {
+fn control_dirpad(
+    dir_code: &[DirPadKey],
+    cache: &mut HashMap<(DirPadKey, DirPadKey, u32), usize>,
+    indirections: u32,
+) -> usize {
     #[cfg(debug_assertions)]
     println!(
         "indirections: {:2}, len: {}, {:?}",
@@ -64,8 +71,22 @@ fn control_dirpad(dir_code: &[DirPadKey], indirections: u32) -> usize {
     }
     let mut len = 0;
     let mut dirpad = DirPad::new();
+    
     for &button in dir_code {
-        len += control_dirpad(&dirpad.press(button), indirections - 1);
+        if let Some(cached_len) = cache.get(&(dirpad.current, button, indirections - 1)) {
+            #[cfg(debug_assertions)]
+            println!(
+                "CACHE HIT: (cur: {}, target: {}, indirections: {}), len: {}",
+                dirpad.current, button, indirections - 1, cached_len
+            );
+            dirpad.current = button;
+            len += cached_len;
+        } else {
+            let cur = dirpad.current;
+            let tmp = control_dirpad(&dirpad.press(button), cache, indirections - 1);
+            cache.insert((cur, button, indirections - 1), tmp);
+            len += tmp;
+        }
     }
     len
 }
@@ -270,7 +291,7 @@ impl NumPad {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Hash, PartialEq, Eq)]
 enum DirPadKey {
     Right,
     Up,
