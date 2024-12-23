@@ -13,17 +13,17 @@ fn main() {
 
 fn exercise(input: &str, indirections: u32) -> usize {
     let mut res = 0;
-    let mut numpad = NumPad::new();
-    let mut cache: HashMap<(DirPadKey, DirPadKey, u32), usize> = HashMap::new();
+    let mut numpad = KeyPad::new(NumKey::Activate);
+    let mut cache: HashMap<(DirKey, DirKey, u32), usize> = HashMap::new();
 
     for line in input.lines() {
         let mut len: usize = 0;
-        let num_code: Vec<NumPadKey> = line.chars().map(|c| NumPadKey::from(c)).collect();
+        let num_code: Vec<NumKey> = line.chars().map(|c| NumKey::from(c)).collect();
         println!("{:?}", num_code);
 
         for button in num_code {
             println!("cur: {:?}, target: {:?}", numpad.current, button);
-            len += control_dirpad(&numpad.press(button), &mut cache, indirections);
+            len += remote_control(&numpad.press(button), &mut cache, indirections);
         }
 
         println!("final len: {}\n", len);
@@ -32,9 +32,9 @@ fn exercise(input: &str, indirections: u32) -> usize {
     res
 }
 
-fn control_dirpad(
-    dir_code: &[DirPadKey],
-    cache: &mut HashMap<(DirPadKey, DirPadKey, u32), usize>,
+fn remote_control(
+    dir_code: &[DirKey],
+    cache: &mut HashMap<(DirKey, DirKey, u32), usize>,
     indirections: u32,
 ) -> usize {
     #[cfg(debug_assertions)]
@@ -49,7 +49,7 @@ fn control_dirpad(
         return dir_code.len();
     }
     let mut len = 0;
-    let mut dirpad = DirPad::new();
+    let mut dirpad = KeyPad::new(DirKey::Activate);
 
     for &button in dir_code {
         if let Some(cached_len) = cache.get(&(dirpad.current, button, indirections - 1)) {
@@ -65,12 +65,246 @@ fn control_dirpad(
             len += cached_len;
         } else {
             let cur = dirpad.current;
-            let tmp = control_dirpad(&dirpad.press(button), cache, indirections - 1);
+            let tmp = remote_control(&dirpad.press(button), cache, indirections - 1);
             cache.insert((cur, button, indirections - 1), tmp);
             len += tmp;
         }
     }
     len
+}
+
+struct KeyPad<T: Key> {
+    current: T,
+}
+
+impl<T: Key> KeyPad<T> {
+    fn new(initial: T) -> KeyPad<T> {
+        KeyPad { current: initial }
+    }
+
+    fn press(&mut self, target: T) -> Vec<DirKey> {
+        let mut movements: Vec<DirKey> = Vec::new();
+        let row_diff = target.pos().row - self.current.pos().row;
+        let col_diff = target.pos().col - self.current.pos().col;
+
+        for _ in 0..col_diff.abs() {
+            movements.push(if col_diff.is_positive() {
+                DirKey::Right
+            } else {
+                DirKey::Left
+            });
+        }
+        for _ in 0..row_diff.abs() {
+            movements.push(if row_diff.is_positive() {
+                DirKey::Up
+            } else {
+                DirKey::Down
+            });
+        }
+
+        if col_diff.is_positive() {
+            movements.reverse();
+        }
+        if !self.current.is_valid(&movements) {
+            movements.reverse();
+        }
+
+        movements.push(DirKey::Activate);
+        self.current = target;
+        movements
+    }
+}
+
+trait Key: Copy {
+    fn pos(&self) -> Position;
+    fn at(pos: Position) -> Option<Self>;
+    fn to(&self, dir: DirKey) -> Option<Self> {
+        Self::at(self.pos() + dir)
+    }
+    fn is_valid(&self, movements: &[DirKey]) -> bool {
+        let mut cur = *self;
+        for &movement in movements {
+            if let Some(key) = cur.to(movement) {
+                cur = key;
+            } else {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+#[derive(Clone, Copy)]
+enum NumKey {
+    Zero,
+    One,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Activate,
+}
+
+impl Key for NumKey {
+    fn pos(&self) -> Position {
+        use NumKey::*;
+        let row: i8 = match self {
+            Zero | Activate => 0,
+            One | Two | Three => 1,
+            Four | Five | Six => 2,
+            Seven | Eight | Nine => 3,
+        };
+        let col: i8 = match self {
+            One | Four | Seven => 0,
+            Zero | Two | Five | Eight => 1,
+            Activate | Three | Six | Nine => 2,
+        };
+        Position::new(row, col)
+    }
+
+    fn at(pos: Position) -> Option<NumKey> {
+        use NumKey::*;
+        match pos {
+            p if p == Zero.pos() => Some(Zero),
+            p if p == One.pos() => Some(One),
+            p if p == Two.pos() => Some(Two),
+            p if p == Three.pos() => Some(Three),
+            p if p == Four.pos() => Some(Four),
+            p if p == Five.pos() => Some(Five),
+            p if p == Six.pos() => Some(Six),
+            p if p == Seven.pos() => Some(Seven),
+            p if p == Eight.pos() => Some(Eight),
+            p if p == Nine.pos() => Some(Nine),
+            p if p == Activate.pos() => Some(Activate),
+            _ => None,
+        }
+    }
+}
+
+impl From<char> for NumKey {
+    fn from(c: char) -> NumKey {
+        use NumKey::*;
+        match c {
+            '0' => Zero,
+            '1' => One,
+            '2' => Two,
+            '3' => Three,
+            '4' => Four,
+            '5' => Five,
+            '6' => Six,
+            '7' => Seven,
+            '8' => Eight,
+            '9' => Nine,
+            'A' => Activate,
+            _ => panic!("Invalid NumPad character found!"),
+        }
+    }
+}
+
+impl fmt::Display for NumKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use NumKey::*;
+        write!(
+            f,
+            "{}",
+            match self {
+                Zero => '0',
+                One => '1',
+                Two => '2',
+                Three => '3',
+                Four => '4',
+                Five => '5',
+                Six => '6',
+                Seven => '7',
+                Eight => '8',
+                Nine => '9',
+                Activate => 'A',
+            }
+        )
+    }
+}
+
+impl fmt::Debug for NumKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(&self, f)
+    }
+}
+
+#[derive(Clone, Copy, Hash, PartialEq, Eq)]
+enum DirKey {
+    Right,
+    Up,
+    Down,
+    Left,
+    Activate,
+}
+
+impl Key for DirKey {
+    fn pos(&self) -> Position {
+        use DirKey::*;
+        let row: i8 = match self {
+            Left | Down | Right => 0,
+            Up | Activate => 1,
+        };
+        let col: i8 = match self {
+            Left => 0,
+            Up | Down => 1,
+            Right | Activate => 2,
+        };
+        Position::new(row, col)
+    }
+
+    fn at(pos: Position) -> Option<DirKey> {
+        use DirKey::*;
+        match pos {
+            p if p == Right.pos() => Some(Right),
+            p if p == Up.pos() => Some(Up),
+            p if p == Down.pos() => Some(Down),
+            p if p == Left.pos() => Some(Left),
+            p if p == Activate.pos() => Some(Activate),
+            _ => None,
+        }
+    }
+}
+
+impl DirKey {
+    fn dir(&self) -> Position {
+        use DirKey::*;
+        match self {
+            Right => Position::new(0, 1),
+            Up => Position::new(1, 0),
+            Down => Position::new(-1, 0),
+            Left => Position::new(0, -1),
+            Activate => Position::new(0, 0),
+        }
+    }
+}
+
+impl fmt::Display for DirKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use DirKey::*;
+        write!(
+            f,
+            "{}",
+            match self {
+                Right => '>',
+                Up => '^',
+                Down => 'v',
+                Left => '<',
+                Activate => 'A',
+            }
+        )
+    }
+}
+
+impl fmt::Debug for DirKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(&self, f)
+    }
 }
 
 #[derive(PartialEq, Eq)]
@@ -96,10 +330,10 @@ impl Add for Position {
     }
 }
 
-impl Add<DirPadKey> for Position {
+impl Add<DirKey> for Position {
     type Output = Position;
 
-    fn add(self, dir: DirPadKey) -> Self::Output {
+    fn add(self, dir: DirKey) -> Self::Output {
         self + dir.dir()
     }
 }
@@ -112,293 +346,6 @@ impl Sub for Position {
             row: self.row - other.row,
             col: self.col - other.col,
         }
-    }
-}
-
-#[derive(Clone, Copy)]
-enum NumPadKey {
-    Zero,
-    One,
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-    Nine,
-    Activate,
-}
-
-impl NumPadKey {
-    fn new(pos: Position) -> Option<NumPadKey> {
-        use NumPadKey::*;
-        match pos {
-            p if p == Zero.pos() => Some(Zero),
-            p if p == One.pos() => Some(One),
-            p if p == Two.pos() => Some(Two),
-            p if p == Three.pos() => Some(Three),
-            p if p == Four.pos() => Some(Four),
-            p if p == Five.pos() => Some(Five),
-            p if p == Six.pos() => Some(Six),
-            p if p == Seven.pos() => Some(Seven),
-            p if p == Eight.pos() => Some(Eight),
-            p if p == Nine.pos() => Some(Nine),
-            p if p == Activate.pos() => Some(Activate),
-            _ => None,
-        }
-    }
-
-    fn pos(&self) -> Position {
-        use NumPadKey::*;
-        let row: i8 = match self {
-            Zero | Activate => 0,
-            One | Two | Three => 1,
-            Four | Five | Six => 2,
-            Seven | Eight | Nine => 3,
-        };
-        let col: i8 = match self {
-            One | Four | Seven => 0,
-            Zero | Two | Five | Eight => 1,
-            Activate | Three | Six | Nine => 2,
-        };
-        Position::new(row, col)
-    }
-
-    fn to(&self, dir: DirPadKey) -> Option<NumPadKey> {
-        NumPadKey::new(self.pos() + dir)
-    }
-
-    fn is_allowed(&self, movements: &Vec<DirPadKey>) -> bool {
-        let mut cur = *self;
-        for &movement in movements {
-            if let Some(key) = cur.to(movement) {
-                cur = key;
-            } else {
-                return false;
-            }
-        }
-        true
-    }
-}
-
-impl From<char> for NumPadKey {
-    fn from(c: char) -> NumPadKey {
-        use NumPadKey::*;
-        match c {
-            '0' => Zero,
-            '1' => One,
-            '2' => Two,
-            '3' => Three,
-            '4' => Four,
-            '5' => Five,
-            '6' => Six,
-            '7' => Seven,
-            '8' => Eight,
-            '9' => Nine,
-            'A' => Activate,
-            _ => panic!("Invalid NumPad character found!"),
-        }
-    }
-}
-
-impl fmt::Display for NumPadKey {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use NumPadKey::*;
-        write!(
-            f,
-            "{}",
-            match self {
-                Zero => '0',
-                One => '1',
-                Two => '2',
-                Three => '3',
-                Four => '4',
-                Five => '5',
-                Six => '6',
-                Seven => '7',
-                Eight => '8',
-                Nine => '9',
-                Activate => 'A',
-            }
-        )
-    }
-}
-
-impl fmt::Debug for NumPadKey {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Display::fmt(&self, f)
-    }
-}
-
-struct NumPad {
-    current: NumPadKey,
-}
-
-impl NumPad {
-    fn new() -> NumPad {
-        NumPad {
-            current: NumPadKey::Activate,
-        }
-    }
-
-    fn press(&mut self, target: NumPadKey) -> Vec<DirPadKey> {
-        let mut movements: Vec<DirPadKey> = Vec::new();
-        let row_diff = target.pos().row - self.current.pos().row;
-        let col_diff = target.pos().col - self.current.pos().col;
-
-        for _ in 0..col_diff.abs() {
-            movements.push(if col_diff.is_positive() {
-                DirPadKey::Right
-            } else {
-                DirPadKey::Left
-            });
-        }
-        for _ in 0..row_diff.abs() {
-            movements.push(if row_diff.is_positive() {
-                DirPadKey::Up
-            } else {
-                DirPadKey::Down
-            });
-        }
-        if col_diff.is_positive() {
-            movements.reverse();
-        }
-        if !self.current.is_allowed(&movements) {
-            movements.reverse();
-        }
-        movements.push(DirPadKey::Activate);
-        self.current = target;
-        movements
-    }
-}
-
-#[derive(Clone, Copy, Hash, PartialEq, Eq)]
-enum DirPadKey {
-    Right,
-    Up,
-    Down,
-    Left,
-    Activate,
-}
-
-impl DirPadKey {
-    fn new(pos: Position) -> Option<DirPadKey> {
-        use DirPadKey::*;
-        match pos {
-            p if p == Right.pos() => Some(Right),
-            p if p == Up.pos() => Some(Up),
-            p if p == Down.pos() => Some(Down),
-            p if p == Left.pos() => Some(Left),
-            p if p == Activate.pos() => Some(Activate),
-            _ => None,
-        }
-    }
-
-    fn pos(&self) -> Position {
-        use DirPadKey::*;
-        let row: i8 = match self {
-            Left | Down | Right => 0,
-            Up | Activate => 1,
-        };
-        let col: i8 = match self {
-            Left => 0,
-            Up | Down => 1,
-            Right | Activate => 2,
-        };
-        Position::new(row, col)
-    }
-
-    fn dir(&self) -> Position {
-        use DirPadKey::*;
-        match self {
-            Right => Position::new(0, 1),
-            Up => Position::new(1, 0),
-            Down => Position::new(-1, 0),
-            Left => Position::new(0, -1),
-            Activate => Position::new(0, 0),
-        }
-    }
-
-    fn to(&self, dir: DirPadKey) -> Option<DirPadKey> {
-        DirPadKey::new(self.pos() + dir)
-    }
-
-    fn is_allowed(&self, movements: &Vec<DirPadKey>) -> bool {
-        let mut cur = *self;
-        for &movement in movements {
-            if let Some(key) = cur.to(movement) {
-                cur = key;
-            } else {
-                return false;
-            }
-        }
-        true
-    }
-}
-
-impl fmt::Display for DirPadKey {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use DirPadKey::*;
-        write!(
-            f,
-            "{}",
-            match self {
-                Right => '>',
-                Up => '^',
-                Down => 'v',
-                Left => '<',
-                Activate => 'A',
-            }
-        )
-    }
-}
-
-impl fmt::Debug for DirPadKey {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Display::fmt(&self, f)
-    }
-}
-
-struct DirPad {
-    current: DirPadKey,
-}
-
-impl DirPad {
-    fn new() -> DirPad {
-        DirPad {
-            current: DirPadKey::Activate,
-        }
-    }
-
-    fn press(&mut self, target: DirPadKey) -> Vec<DirPadKey> {
-        let mut movements: Vec<DirPadKey> = Vec::new();
-        let row_diff = target.pos().row - self.current.pos().row;
-        let col_diff = target.pos().col - self.current.pos().col;
-
-        for _ in 0..col_diff.abs() {
-            movements.push(if col_diff.is_positive() {
-                DirPadKey::Right
-            } else {
-                DirPadKey::Left
-            });
-        }
-        for _ in 0..row_diff.abs() {
-            movements.push(if row_diff.is_positive() {
-                DirPadKey::Up
-            } else {
-                DirPadKey::Down
-            });
-        }
-        if col_diff.is_positive() {
-            movements.reverse();
-        }
-        if !self.current.is_allowed(&movements) {
-            movements.reverse();
-        }
-        movements.push(DirPadKey::Activate);
-        self.current = target;
-        movements
     }
 }
 
