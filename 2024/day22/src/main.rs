@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use utils::{input, parse};
 
 fn main() {
@@ -26,13 +27,22 @@ fn exercise2(input: &str) -> usize {
     let buyers: Vec<Vec<(i8, i8)>> = parse::numbers::<usize>(input)
         .map(|secret| zip_prices_and_changes(secret, SECRET_AMOUNT))
         .collect();
+    let mut cache: HashMap<&[(i8, i8)], usize> = HashMap::new();
 
     buyers
         .iter()
         .map(|buyer| {
             buyer
                 .windows(SEQUENCE_LEN)
-                .map(|sequence| sell_all(sequence, &buyers))
+                .map(|sequence| {
+                    if let Some(&cached) = cache.get(sequence) {
+                        cached
+                    } else {
+                        let price = sell_all(sequence, &buyers);
+                        cache.insert(sequence, price);
+                        price
+                    }
+                })
                 .max()
                 .unwrap()
         })
