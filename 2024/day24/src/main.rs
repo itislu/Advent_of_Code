@@ -8,21 +8,19 @@ fn main() {
 
 fn exercise1(input: &str) -> usize {
     let mut res: usize = 0;
-    let mut gates: HashMap<&str, Gate> = parse_gates(input);
-    let mut targets: Vec<&str> = gates
-        .keys()
-        .filter(|&key| key.starts_with('z'))
-        .copied()
-        .collect();
-    targets.sort();
+    let gates: HashMap<&str, Gate> = parse_gates(input);
 
-    for (i, target) in targets.iter().enumerate() {
-        res |= (get_out(&mut gates, target) as usize) << i;
+    for target in gates.keys().filter(|&key| key.starts_with('z')) {
+        res |= to_dec(target, get_out(&gates, target));
     }
     res
 }
 
-fn get_out(gates: &mut HashMap<&str, Gate>, target: &str) -> u8 {
+fn to_dec(gate: &str, out: u8) -> usize {
+    (out as usize) << parse::numbers::<u8>(gate).next().unwrap()
+}
+
+fn get_out(gates: &HashMap<&str, Gate>, target: &str) -> u8 {
     match gates[target].clone() {
         Gate::Out(out) => out,
         Gate::In((in1, op, in2)) => op.out(get_out(gates, &in1), get_out(gates, &in2)),
