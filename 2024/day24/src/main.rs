@@ -7,13 +7,18 @@ fn main() {
 }
 
 fn exercise1(input: &str) -> usize {
-    let mut res: usize = 0;
     let gates: HashMap<&str, Gate> = parse_gates(input);
 
-    for target in gates.keys().filter(|&key| key.starts_with('z')) {
-        res |= to_dec(target, get_out(&gates, target));
+    get_combined_number(&gates, 'z')
+}
+
+fn get_combined_number(gates: &HashMap<&str, Gate>, gate_letter: char) -> usize {
+    let mut num: usize = 0;
+
+    for target in gates.keys().filter(|&key| key.starts_with(gate_letter)) {
+        num |= to_dec(target, get_out(&gates, target));
     }
-    res
+    num
 }
 
 fn to_dec(gate: &str, out: u8) -> usize {
