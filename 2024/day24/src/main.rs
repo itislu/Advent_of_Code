@@ -7,32 +7,96 @@ fn main() {
 }
 
 fn exercise1(input: &str) -> usize {
-    let gates: HashMap<&str, Gate> = parse_gates(input);
+    let gates: HashMap<String, Gate> = parse_gates(input);
 
     get_combined_number(&gates, 'z')
 }
 
-fn get_combined_number(gates: &HashMap<&str, Gate>, gate_letter: char) -> usize {
+fn get_combined_number(gates: &HashMap<String, Gate>, gate_letter: char) -> usize {
     let mut num: usize = 0;
 
-    for target in gates.keys().filter(|&key| key.starts_with(gate_letter)) {
-        num |= to_dec(target, get_out(&gates, target));
+    for (key, gate) in gates.iter().filter(|(key, _)| key.starts_with(gate_letter)) {
+        num |= (get_value(&gates, key) as usize) << gate.bit_pos().unwrap_or_default();
     }
     num
 }
 
-fn to_dec(gate: &str, out: u8) -> usize {
-    (out as usize) << parse::numbers::<u8>(gate).next().unwrap()
-}
-
-fn get_out(gates: &HashMap<&str, Gate>, target: &str) -> u8 {
-    match gates[target].clone() {
-        Gate::Out(out) => out,
-        Gate::In((in1, op, in2)) => op.out(get_out(gates, &in1), get_out(gates, &in2)),
+fn get_value(gates: &HashMap<String, Gate>, target: &str) -> u8 {
+    match &gates[target] {
+        Gate::Input(data) => data.value,
+        Gate::Normal(data) => data
+            .op
+            .calc(get_value(gates, &data.in1), get_value(gates, &data.in2)),
     }
 }
 
-#[derive(Clone)]
+enum Gate {
+    Input(InputData),
+    Normal(GateData),
+}
+
+impl Gate {
+    fn new(line: &str) -> Gate {
+        if line.split_whitespace().count() == 2 {
+            Gate::Input(InputData::new(line))
+        } else {
+            Gate::Normal(GateData::new(line))
+        }
+    }
+
+    fn name(&self) -> &str {
+        match self {
+            Gate::Input(data) => data.name.as_str(),
+            Gate::Normal(data) => data.out.as_str(),
+        }
+    }
+
+    fn bit_pos(&self) -> Option<u8> {
+        match self {
+            Gate::Input(data) => Some(data.bit_pos),
+            Gate::Normal(data) => parse::numbers::<u8>(&data.out).next(),
+        }
+    }
+}
+
+struct GateData {
+    op: Operator,
+    in1: String,
+    in2: String,
+    out: String,
+}
+
+impl GateData {
+    fn new(line: &str) -> GateData {
+        let mut split = line.split_whitespace();
+        GateData {
+            in1: split.next().unwrap().to_owned(),
+            op: Operator::from(split.next().unwrap()),
+            in2: split.next().unwrap().to_owned(),
+            out: split.nth(1).unwrap().to_owned(),
+        }
+    }
+}
+
+struct InputData {
+    name: String,
+    bit_pos: u8,
+    value: u8,
+}
+
+impl InputData {
+    fn new(line: &str) -> InputData {
+        let mut split = line.split(": ");
+        let name = split.next().unwrap();
+        let value = parse::numbers::<u8>(split.next().unwrap()).next().unwrap();
+        InputData {
+            name: name.to_owned(),
+            bit_pos: parse::numbers(name).next().unwrap(),
+            value,
+        }
+    }
+}
+
 enum Operator {
     AND,
     OR,
@@ -40,7 +104,7 @@ enum Operator {
 }
 
 impl Operator {
-    fn out(&self, in1: u8, in2: u8) -> u8 {
+    fn calc(&self, in1: u8, in2: u8) -> u8 {
         match self {
             Operator::AND => in1 & in2,
             Operator::OR => in1 | in2,
@@ -60,29 +124,12 @@ impl From<&str> for Operator {
     }
 }
 
-#[derive(Clone)]
-enum Gate {
-    In((String, Operator, String)),
-    Out(u8),
-}
+fn parse_gates(input: &str) -> HashMap<String, Gate> {
+    let mut gates: HashMap<String, Gate> = HashMap::new();
 
-fn parse_gates(input: &str) -> HashMap<&str, Gate> {
-    let mut gates: HashMap<&str, Gate> = HashMap::new();
-    let (values, prerequisites) = input.split_once("\n\n").unwrap();
-
-    for line in values.lines() {
-        let mut split = line.split(": ");
-        let out = split.next().unwrap();
-        let value = parse::numbers::<u8>(split.next().unwrap()).next().unwrap();
-        gates.insert(out, Gate::Out(value));
-    }
-    for line in prerequisites.lines() {
-        let mut split = line.split_whitespace();
-        let in1 = split.next().unwrap();
-        let op = Operator::from(split.next().unwrap());
-        let in2 = split.next().unwrap();
-        let out = split.nth(1).unwrap();
-        gates.insert(out, Gate::In((in1.to_owned(), op, in2.to_owned())));
+    for line in input.lines().filter(|line| !line.is_empty()) {
+        let gate = Gate::new(line);
+        gates.insert(gate.name().to_owned(), gate);
     }
     gates
 }
