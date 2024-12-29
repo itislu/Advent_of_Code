@@ -13,7 +13,7 @@ fn exercise1(input: &str) -> usize {
     get_combined_number(&gates, 'z')
 }
 
-fn exercise2(input: &str) -> &str {
+fn exercise2(input: &str) -> String {
     let gates: HashMap<String, Gate> = parse_gates(input);
 
     let x = get_combined_number(&gates, 'x');
@@ -26,7 +26,12 @@ fn exercise2(input: &str) -> &str {
     println!(" z gates: {}", z);
     compare_bits(expected, z);
 
-    ""
+    let mut bad_gates: Vec<String> = collect_bad_gates(&gates)
+        .iter()
+        .map(|gate| gate.out.clone())
+        .collect();
+    bad_gates.sort();
+    bad_gates.join(",")
 }
 
 fn compare_bits(expected: usize, actual: usize) {
@@ -45,7 +50,120 @@ fn compare_bits(expected: usize, actual: usize) {
     println!("  actual: {:b}", actual);
 }
 
-// I know that the OUTPUT wires have been swapped on gates, NOT input wires!
+fn collect_bad_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
+    let bad_xor_gates = collect_bad_xor_gates(gates);
+    let bad_and_gates = collect_bad_and_gates(gates);
+    let bad_or_gates = collect_bad_or_gates(gates);
+
+    println!("\nBAD XOR GATES:");
+    for gate in &bad_xor_gates {
+        println!("{:?}", gate);
+    }
+    println!("\nBAD AND GATES:");
+    for gate in &bad_and_gates {
+        println!("{:?}", gate);
+    }
+    println!("\nBAD OR GATES:");
+    for gate in &bad_or_gates {
+        println!("{:?}", gate);
+    }
+
+    bad_xor_gates
+        .iter()
+        .copied()
+        .chain(bad_and_gates.iter().copied())
+        .chain(bad_or_gates.iter().copied())
+        .collect()
+}
+
+// Either both inputs contain digit, or output contains digit (except 00)
+fn collect_bad_xor_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
+    let mut bad_gates = Vec::new();
+
+    for gate in gates.iter().filter_map(|(_, gate)| match gate {
+        Gate::Normal(data) if data.op == Operator::XOR => Some(data),
+        _ => None,
+    }) {
+        if gate.in1.ends_with("00") && gate.in2.ends_with("00") {
+            if !gate.out.ends_with("00") {
+                bad_gates.push(gate);
+            }
+            continue;
+        }
+        let in1_digit = gate.in1.chars().any(|c| c.is_digit(10));
+        let in2_digit = gate.in2.chars().any(|c| c.is_digit(10));
+        let out_digit = gate.out.chars().any(|c| c.is_digit(10));
+        if !((in1_digit && in2_digit && !out_digit) || (out_digit && !in1_digit && !in2_digit)) {
+            bad_gates.push(gate);
+        }
+    }
+    bad_gates
+}
+
+// Output to OR (except if inputs are 00)
+fn collect_bad_and_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
+    let mut bad_gates = Vec::new();
+
+    for gate in gates.iter().filter_map(|(_, gate)| match gate {
+        Gate::Normal(data) if data.op == Operator::AND => Some(data),
+        _ => None,
+    }) {
+        let outputs = outputs_to(gates, &gate.out).collect::<Vec<&GateData>>();
+        if gate.in1.ends_with("00") && gate.in2.ends_with("00") {
+            if outputs.len() != 2
+                || count_operator(&outputs, Operator::XOR) != 1
+                || count_operator(&outputs, Operator::AND) != 1
+            {
+                bad_gates.push(gate);
+            }
+            continue;
+        }
+        if outputs.len() != 1 || count_operator(&outputs, Operator::OR) != 1 {
+            bad_gates.push(gate);
+        }
+    }
+    bad_gates
+}
+
+// Output to 1 XOR and 1 AND (except for last, which outputs as last bit)
+fn collect_bad_or_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
+    let mut bad_gates = Vec::new();
+
+    for gate in gates.iter().filter_map(|(_, gate)| match gate {
+        Gate::Normal(data) if data.op == Operator::OR => Some(data),
+        _ => None,
+    }) {
+        if let Some(bit_pos) = gate.bit_pos() {
+            if bit_pos as usize == gates.values().filter(|g| g.is_input()).count() / 2 {
+                continue;
+            }
+        }
+        let outputs = outputs_to(gates, &gate.out).collect::<Vec<&GateData>>();
+        if outputs.len() != 2
+            || count_operator(&outputs, Operator::XOR) != 1
+            || count_operator(&outputs, Operator::AND) != 1
+        {
+            bad_gates.push(gate);
+        }
+    }
+    bad_gates
+}
+
+fn outputs_to<'a>(
+    gates: &'a HashMap<String, Gate>,
+    from: &'a str,
+) -> impl Iterator<Item = &'a GateData> {
+    gates.values().filter_map(move |gate| match gate {
+        Gate::Normal(data) if data.in1 == from || data.in2 == from => Some(data),
+        _ => None,
+    })
+}
+
+fn count_operator(outputs: &[&GateData], op: Operator) -> usize {
+    outputs.iter().filter(|gate| gate.op == op).count()
+}
+
+// I know that only OUTPUT wires have been swapped, NOT input wires!
 
 /*
 z00 XOR
@@ -70,6 +188,13 @@ zn XOR
             yn-1
         AND
             same as zn-1
+
+z45 OR
+    AND
+        x44
+        y44
+    AND
+        same as z44
 */
 
 /*
@@ -157,8 +282,16 @@ impl Gate {
             Gate::Normal(data) => parse::numbers::<u8>(&data.out).next(),
         }
     }
+
+    fn is_input(&self) -> bool {
+        match self {
+            Gate::Input(_) => true,
+            Gate::Normal(_) => false,
+        }
+    }
 }
 
+#[derive(Debug)]
 struct GateData {
     op: Operator,
     in1: String,
@@ -175,6 +308,10 @@ impl GateData {
             in2: split.next().unwrap().to_owned(),
             out: split.nth(1).unwrap().to_owned(),
         }
+    }
+
+    fn bit_pos(&self) -> Option<u8> {
+        parse::numbers::<u8>(&self.out).next()
     }
 }
 
@@ -197,6 +334,7 @@ impl InputData {
     }
 }
 
+#[derive(PartialEq, Eq, Debug)]
 enum Operator {
     AND,
     OR,
