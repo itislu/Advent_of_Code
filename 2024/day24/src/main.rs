@@ -4,12 +4,112 @@ use utils::{input, parse};
 fn main() {
     let input = input::read_input();
     println!("exercise 1: {}", exercise1(&input));
+    println!("exercise 2: {}", exercise2(&input));
 }
 
 fn exercise1(input: &str) -> usize {
     let gates: HashMap<String, Gate> = parse_gates(input);
 
     get_combined_number(&gates, 'z')
+}
+
+fn exercise2(input: &str) -> &str {
+    let gates: HashMap<String, Gate> = parse_gates(input);
+
+    let x = get_combined_number(&gates, 'x');
+    let y = get_combined_number(&gates, 'y');
+    let expected = x + y;
+    let z = get_combined_number(&gates, 'z');
+    println!(" x gates: {}", x);
+    println!(" y gates: {}", y);
+    println!("expected: {}", expected);
+    println!(" z gates: {}", z);
+    compare_bits(expected, z);
+
+    ""
+}
+
+fn compare_bits(expected: usize, actual: usize) {
+    for i in 0..usize::BITS {
+        let expected_bit = (expected >> i) & 1;
+        let actual_bit = (actual >> i) & 1;
+        if expected_bit != actual_bit {
+            println!(
+                "Bit {:2} differs - expected: {}, actual: {}",
+                i, expected_bit, actual_bit
+            );
+        }
+    }
+
+    println!("expected: {:b}", expected);
+    println!("  actual: {:b}", actual);
+}
+
+// I know that the OUTPUT wires have been swapped on gates, NOT input wires!
+
+/*
+z00 XOR
+    x00
+    y00
+
+z01 XOR
+    XOR
+        x01
+        y01
+    AND
+        x00
+        y00
+
+zn XOR
+    XOR
+        xn
+        yn
+    OR
+        AND
+            xn-1
+            yn-1
+        AND
+            same as zn-1
+*/
+
+/*
+- If an input name for XOR and AND contains digit { half1 } else { half2 }
+*/
+
+struct HalfAdder {
+    bit: u8,
+    in1: String,
+    in2: String,
+    sum: String,
+    carry: String,
+}
+
+struct CarryOut {
+    in1: String,
+    in2: String,
+    out: String,
+}
+
+/*
+FullAdder:
+- carry_in from prev adder should be same as 1 in for half2
+- sum from half1 should be 1 in for half2
+- sum from half2 should be sum of FullAdder
+- carry from half1 should be 1 for carry_out
+- carry from half2 should be 1 for carry_out
+
+- There always is a pair of XOR and AND with same inputs belonging to same bit.
+    - Both ANDs output to the same OR.
+*/
+struct FullAdder {
+    bit: u8,
+    in1: String,
+    in2: String,
+    sum: String,
+    half1: HalfAdder,
+    half2: HalfAdder,
+    carry_in: String,
+    carry_out: String,
 }
 
 fn get_combined_number(gates: &HashMap<String, Gate>, gate_letter: char) -> usize {
