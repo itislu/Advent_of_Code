@@ -90,11 +90,22 @@ fn collect_bad_xor_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
             }
             continue;
         }
-        let in1_digit = gate.in1.chars().any(|c| c.is_digit(10));
-        let in2_digit = gate.in2.chars().any(|c| c.is_digit(10));
-        let out_digit = gate.out.chars().any(|c| c.is_digit(10));
-        if !((in1_digit && in2_digit && !out_digit) || (out_digit && !in1_digit && !in2_digit)) {
-            bad_gates.push(gate);
+        let is_input1 = gate.in1.chars().any(|c| c.is_digit(10));
+        let is_input2 = gate.in2.chars().any(|c| c.is_digit(10));
+        let is_output = gate.out.chars().any(|c| c.is_digit(10));
+
+        match (is_input1, is_input2, is_output) {
+            (true, true, false) => {
+                let outputs = outputs_to(gates, &gate.out).collect::<Vec<&GateData>>();
+                if outputs.len() != 2
+                    || count_operator(&outputs, Operator::XOR) != 1
+                    || count_operator(&outputs, Operator::AND) != 1
+                {
+                    bad_gates.push(gate);
+                }
+            }
+            (false, false, true) => {}
+            _ => bad_gates.push(gate),
         }
     }
     bad_gates
