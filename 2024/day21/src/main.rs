@@ -18,7 +18,7 @@ fn exercise(input: &str, indirections: u32) -> usize {
 
     for line in input.lines() {
         let mut len: usize = 0;
-        let num_code: Vec<NumKey> = line.chars().map(|c| NumKey::from(c)).collect();
+        let num_code: Vec<NumKey> = line.chars().map(NumKey::from).collect();
         println!("{:?}", num_code);
 
         for button in num_code {

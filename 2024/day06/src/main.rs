@@ -40,7 +40,7 @@ fn exercise2(input: &str) -> usize {
             .put(main_guard.row, main_guard.col, Indicator::Obstacle);
         loop {
             match trial_guard.move_forward() {
-                MoveResult::Success => {}
+                MoveResult::Success => (),
                 MoveResult::InfiniteLoop => {
                     res += 1;
                     break;

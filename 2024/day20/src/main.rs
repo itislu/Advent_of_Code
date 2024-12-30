@@ -155,7 +155,7 @@ impl RaceTrack {
                     '.' => {
                         track.insert(Position::new(row, col), TrackTile::new(row, col));
                     }
-                    _ => {}
+                    _ => (),
                 }
             }
         }
@@ -213,26 +213,26 @@ fn _print_track_with_cheat_tiles(
     let mut buffer: Vec<Vec<String>> =
         vec![vec![" ".to_string(); racetrack.width]; racetrack.height];
 
-    for row in 0..racetrack.height {
-        for col in 0..racetrack.width {
-            if let Some(tile) = racetrack.track.get(&Position::new(row, col)) {
+    for (row, buffer_row) in buffer.iter_mut().enumerate() {
+        for (col, cell) in buffer_row.iter_mut().enumerate() {
+            *cell = if let Some(tile) = racetrack.track.get(&Position::new(row, col)) {
                 if tile.pos == racetrack.start {
-                    buffer[row][col] = colors::BOLD_BRIGHT_CYAN.to_string() + "S" + colors::RESET;
+                    format!("{}S{}", colors::BOLD_BRIGHT_CYAN, colors::RESET)
                 } else if tile.pos == racetrack.finish {
-                    buffer[row][col] = colors::BOLD_BRIGHT_CYAN.to_string() + "E" + colors::RESET;
+                    format!("{}E{}", colors::BOLD_BRIGHT_CYAN, colors::RESET)
                 } else {
-                    buffer[row][col] = ".".to_string();
+                    ".".to_string()
                 }
             } else {
-                buffer[row][col] = "#".to_string();
+                "#".to_string()
             }
         }
     }
     buffer[cur_tile.pos.row][cur_tile.pos.col] =
-        colors::BOLD_BRIGHT_YELLOW.to_string() + "I" + colors::RESET;
+        format!("{}I{}", colors::BOLD_BRIGHT_YELLOW, colors::RESET);
     for cheat_tile in cheat_tiles {
         buffer[cheat_tile.pos.row][cheat_tile.pos.col] =
-            colors::BOLD_BRIGHT_GREEN.to_string() + "O" + colors::RESET;
+            format!("{}O{}", colors::BOLD_BRIGHT_GREEN, colors::RESET);
     }
 
     if !first_time {

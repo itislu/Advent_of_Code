@@ -1,4 +1,7 @@
-use std::collections::{BinaryHeap, HashMap};
+use std::{
+    cmp::Ordering,
+    collections::{BinaryHeap, HashMap},
+};
 use utils::input;
 
 fn main() {
@@ -69,14 +72,16 @@ fn dijkstra_all(map: &Map) -> Option<HashMap<Position, Visit>> {
                     visited.insert(neighbor_visit.state, neighbor_visit.clone());
                     queue.push(neighbor_visit);
                 }
-                Some(existing) => {
-                    if neighbor_visit.cost < existing.cost {
+                Some(existing) => match neighbor_visit.cost.cmp(&existing.cost) {
+                    Ordering::Less => {
                         visited.insert(neighbor_visit.state, neighbor_visit.clone());
                         queue.push(neighbor_visit);
-                    } else if neighbor_visit.cost == existing.cost {
+                    }
+                    Ordering::Equal => {
                         existing.came_from.extend(neighbor_visit.came_from);
                     }
-                }
+                    Ordering::Greater => (),
+                },
             }
         }
     }
@@ -335,7 +340,7 @@ impl Map {
                 match tile.kind {
                     TileKind::Start => start_opt = Some(tile.pos),
                     TileKind::Goal => goal_opt = Some(tile.pos),
-                    _ => {}
+                    _ => (),
                 };
                 grid_line.push(tile);
             }

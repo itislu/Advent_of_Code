@@ -34,13 +34,8 @@ fn parse_locks_and_keys(input: &str) -> (Vec<Vec<u8>>, Vec<Vec<u8>>, u8) {
         let mut pins: Vec<u8> = Vec::new();
 
         for col in 0..width {
-            let mut pin = 0;
-            for row in 0..height {
-                if block[row][col] == '#' {
-                    pin += 1;
-                }
-            }
-            pins.push(pin);
+            let pin = block.iter().filter(|row| row[col] == '#').count();
+            pins.push(pin as u8);
         }
 
         if block[0][0] == '#' {

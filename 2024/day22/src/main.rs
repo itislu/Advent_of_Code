@@ -53,7 +53,7 @@ fn exercise2(input: &str) -> usize {
 fn sell_all(sequence: &[(i8, i8)], buyers: &[Vec<(i8, i8)>]) -> usize {
     buyers
         .iter()
-        .filter_map(|buyer| sell(sequence, &buyer))
+        .filter_map(|buyer| sell(sequence, buyer))
         .sum()
 }
 

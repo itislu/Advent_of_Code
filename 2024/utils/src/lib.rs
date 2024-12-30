@@ -9,7 +9,8 @@ pub mod input {
             Err(_) => env::current_dir().expect("Failed to get current directory"),
         };
         let path = dir.join(filename);
-        fs::read_to_string(&path).expect(&format!("Failed to read file {}", path.display()))
+        fs::read_to_string(&path)
+            .unwrap_or_else(|_| panic!("Failed to read file {}", path.display()))
     }
 }
 

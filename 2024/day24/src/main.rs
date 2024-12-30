@@ -113,7 +113,7 @@ fn collect_bad_xor_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
     let mut bad_gates = Vec::new();
 
     for gate in gates.iter().filter_map(|(_, gate)| match gate {
-        Gate::Normal(data) if data.op == Operator::XOR => Some(data),
+        Gate::Normal(data) if data.op == Operator::Xor => Some(data),
         _ => None,
     }) {
         if gate.in1.ends_with("00") && gate.in2.ends_with("00") {
@@ -122,21 +122,21 @@ fn collect_bad_xor_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
             }
             continue;
         }
-        let is_input1 = gate.in1.chars().any(|c| c.is_digit(10));
-        let is_input2 = gate.in2.chars().any(|c| c.is_digit(10));
-        let is_output = gate.out.chars().any(|c| c.is_digit(10));
+        let is_input1 = gate.in1.chars().any(|c| c.is_ascii_digit());
+        let is_input2 = gate.in2.chars().any(|c| c.is_ascii_digit());
+        let is_output = gate.out.chars().any(|c| c.is_ascii_digit());
 
         match (is_input1, is_input2, is_output) {
             (true, true, false) => {
                 let outputs = outputs_to(gates, &gate.out).collect::<Vec<&GateData>>();
                 if outputs.len() != 2
-                    || count_operator(&outputs, Operator::XOR) != 1
-                    || count_operator(&outputs, Operator::AND) != 1
+                    || count_operator(&outputs, Operator::Xor) != 1
+                    || count_operator(&outputs, Operator::And) != 1
                 {
                     bad_gates.push(gate);
                 }
             }
-            (false, false, true) => {}
+            (false, false, true) => (),
             _ => bad_gates.push(gate),
         }
     }
@@ -148,20 +148,20 @@ fn collect_bad_and_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
     let mut bad_gates = Vec::new();
 
     for gate in gates.iter().filter_map(|(_, gate)| match gate {
-        Gate::Normal(data) if data.op == Operator::AND => Some(data),
+        Gate::Normal(data) if data.op == Operator::And => Some(data),
         _ => None,
     }) {
         let outputs = outputs_to(gates, &gate.out).collect::<Vec<&GateData>>();
         if gate.in1.ends_with("00") && gate.in2.ends_with("00") {
             if outputs.len() != 2
-                || count_operator(&outputs, Operator::XOR) != 1
-                || count_operator(&outputs, Operator::AND) != 1
+                || count_operator(&outputs, Operator::Xor) != 1
+                || count_operator(&outputs, Operator::And) != 1
             {
                 bad_gates.push(gate);
             }
             continue;
         }
-        if outputs.len() != 1 || count_operator(&outputs, Operator::OR) != 1 {
+        if outputs.len() != 1 || count_operator(&outputs, Operator::Or) != 1 {
             bad_gates.push(gate);
         }
     }
@@ -173,7 +173,7 @@ fn collect_bad_or_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
     let mut bad_gates = Vec::new();
 
     for gate in gates.iter().filter_map(|(_, gate)| match gate {
-        Gate::Normal(data) if data.op == Operator::OR => Some(data),
+        Gate::Normal(data) if data.op == Operator::Or => Some(data),
         _ => None,
     }) {
         if let Some(bit_pos) = gate.bit_pos() {
@@ -183,8 +183,8 @@ fn collect_bad_or_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
         }
         let outputs = outputs_to(gates, &gate.out).collect::<Vec<&GateData>>();
         if outputs.len() != 2
-            || count_operator(&outputs, Operator::XOR) != 1
-            || count_operator(&outputs, Operator::AND) != 1
+            || count_operator(&outputs, Operator::Xor) != 1
+            || count_operator(&outputs, Operator::And) != 1
         {
             bad_gates.push(gate);
         }
@@ -210,7 +210,7 @@ fn get_combined_number(gates: &HashMap<String, Gate>, gate_letter: char) -> usiz
     let mut num: usize = 0;
 
     for (key, gate) in gates.iter().filter(|(key, _)| key.starts_with(gate_letter)) {
-        num |= (get_value(&gates, key) as usize) << gate.bit_pos().unwrap_or_default();
+        num |= (get_value(gates, key) as usize) << gate.bit_pos().unwrap_or_default();
     }
     num
 }
@@ -305,17 +305,17 @@ impl InputData {
 
 #[derive(PartialEq, Eq, Debug)]
 enum Operator {
-    AND,
-    OR,
-    XOR,
+    And,
+    Or,
+    Xor,
 }
 
 impl Operator {
     fn calc(&self, in1: u8, in2: u8) -> u8 {
         match self {
-            Operator::AND => in1 & in2,
-            Operator::OR => in1 | in2,
-            Operator::XOR => in1 ^ in2,
+            Operator::And => in1 & in2,
+            Operator::Or => in1 | in2,
+            Operator::Xor => in1 ^ in2,
         }
     }
 }
@@ -323,9 +323,9 @@ impl Operator {
 impl From<&str> for Operator {
     fn from(value: &str) -> Self {
         match value {
-            "AND" => Operator::AND,
-            "OR" => Operator::OR,
-            "XOR" => Operator::XOR,
+            "AND" => Operator::And,
+            "OR" => Operator::Or,
+            "XOR" => Operator::Xor,
             _ => panic!("Invalid operator found!"),
         }
     }

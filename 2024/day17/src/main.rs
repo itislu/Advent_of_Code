@@ -29,7 +29,7 @@ fn exercise2(input: &str) -> usize {
         }
         reg_a -= 8;
     }
-    reg_a
+    // reg_a
 }
 
 struct Computer {

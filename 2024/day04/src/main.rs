@@ -172,7 +172,7 @@ impl<'a> Iterator for GridIterator<'a> {
             | Direction::DiagonalUpRight => {
                 res = res.chars().rev().collect();
             }
-            _ => {}
+            _ => (),
         }
         Some(res)
     }
