@@ -31,13 +31,13 @@ fn exercise1(input: &str, min_gain: usize) -> usize {
 fn exercise2(input: &str, max_cheat: usize, min_gain: usize) -> usize {
     let racetrack = RaceTrack::new(input);
     let mut cheats = 0;
-    let mut first_time = true;
+    let mut _first_time = true;
 
     for cur_tile in racetrack.iter() {
-        #[cfg(debug_assertions)]
+        #[cfg(all(debug_assertions, not(test)))]
         let mut cheat_tiles: Vec<&TrackTile> = Vec::new();
 
-        for cheat_tile in cur_tile
+        for _cheat_tile in cur_tile
             .pos
             .circular_neighbors(max_cheat)
             .filter_map(|neighbor| racetrack.at(&neighbor))
@@ -49,13 +49,15 @@ fn exercise2(input: &str, max_cheat: usize, min_gain: usize) -> usize {
             })
         {
             cheats += 1;
-            #[cfg(debug_assertions)]
-            cheat_tiles.push(cheat_tile);
+            #[cfg(all(debug_assertions, not(test)))]
+            {
+                cheat_tiles.push(_cheat_tile);
+            }
         }
-        #[cfg(debug_assertions)]
+        #[cfg(all(debug_assertions, not(test)))]
         {
-            print_track_with_cheat_tiles(&racetrack, cur_tile, &cheat_tiles, first_time);
-            first_time = false;
+            _print_track_with_cheat_tiles(&racetrack, cur_tile, &cheat_tiles, _first_time);
+            _first_time = false;
         }
     }
     cheats
@@ -202,7 +204,7 @@ impl RaceTrack {
     }
 }
 
-fn print_track_with_cheat_tiles(
+fn _print_track_with_cheat_tiles(
     racetrack: &RaceTrack,
     cur_tile: &TrackTile,
     cheat_tiles: &Vec<&TrackTile>,
