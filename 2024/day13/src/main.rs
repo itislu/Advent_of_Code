@@ -8,7 +8,7 @@ const MAX_PRESSES: i64 = 100;
 const GREAT_DISTANCE: i64 = 10000000000000;
 
 fn main() {
-    let input = input::read_input();
+    let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));
     println!("exercise 2: {}", exercise2(&input));
 }
@@ -181,20 +181,35 @@ fn parse_input(input: &str) -> impl Iterator<Item = (Button, Button, Position)> 
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
-    #[test]
-    fn test_ex1() {
-        let input = input::read_example();
-        let res = exercise1(&input);
-        assert_eq!(res, 480);
+    mod exercise1 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let input = input::read_file("example.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 480);
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 27105);
+        }
     }
 
-    #[test]
-    fn test_ex2() {
-        let input = input::read_example();
-        let res = exercise2(&input);
-        println!("{}", res);
+    mod exercise2 {
+        use super::*;
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, 101726882250942);
+        }
     }
 }

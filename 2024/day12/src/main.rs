@@ -8,7 +8,7 @@ use strum_macros::Display;
 use utils::input;
 
 fn main() {
-    let input = input::read_input();
+    let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));
     println!("exercise 2: {}", exercise2(&input));
 }
@@ -303,20 +303,84 @@ impl Map {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
-    #[test]
-    fn test_ex1() {
-        let input = input::read_example();
-        let res = exercise1(&input);
-        assert_eq!(res, 1930);
+    mod exercise1 {
+        use super::*;
+
+        #[test]
+        fn example_1() {
+            let input = input::read_file("example_1.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 140);
+        }
+
+        #[test]
+        fn example_2() {
+            let input = input::read_file("example_2.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 772);
+        }
+
+        #[test]
+        fn example_3() {
+            let input = input::read_file("example_3.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 1930);
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 1371306);
+        }
     }
 
-    #[test]
-    fn test_ex2() {
-        let input = input::read_example();
-        let res = exercise2(&input);
-        assert_eq!(res, 1206);
+    mod exercise2 {
+        use super::*;
+
+        #[test]
+        fn example2_1() {
+            let input = input::read_file("example2_1.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, 236);
+        }
+
+        #[test]
+        fn example2_2() {
+            let input = input::read_file("example2_2.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, 368);
+        }
+
+        #[test]
+        fn example_1() {
+            let input = input::read_file("example_1.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, 80);
+        }
+
+        #[test]
+        fn example_2() {
+            let input = input::read_file("example_2.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, 436);
+        }
+
+        #[test]
+        fn example_3() {
+            let input = input::read_file("example_3.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, 1206);
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, 805880);
+        }
     }
 }

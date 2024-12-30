@@ -2,7 +2,7 @@ use itertools::Itertools;
 use utils::{input, parse};
 
 fn main() {
-    let input = input::read_input();
+    let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));
     println!("exercise 2: {}", exercise2(&input));
 }
@@ -184,20 +184,42 @@ impl Computer {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
-    #[test]
-    fn test_ex1() {
-        let input = input::read_file("input_example1.txt");
-        let res = exercise1(&input);
-        assert_eq!(res, "4,6,3,5,6,3,5,2,1,0");
+    mod exercise1 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let input = input::read_file("example1.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, "4,6,3,5,6,3,5,2,1,0");
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, "7,4,2,0,5,0,5,3,7");
+        }
     }
 
-    #[test]
-    fn test_ex2() {
-        let input = input::read_file("input_example2.txt");
-        let res = exercise2(&input);
-        assert_eq!(res, 117440);
-    }
+    // mod exercise2 {
+    //     use super::*;
+
+    //     #[test]
+    //     fn example() {
+    //         let input = input::read_file("example2.txt");
+    //         let res = exercise2(&input);
+    //         assert_eq!(res, 117440);
+    //     }
+
+    //     #[test]
+    //     fn answer() {
+    //         let input = input::read_file("input.txt");
+    //         let res = exercise2(&input);
+    //         assert_eq!(res, 202991746427434);
+    //     }
+    // }
 }

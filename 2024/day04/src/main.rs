@@ -2,7 +2,7 @@ use strum::IntoEnumIterator;
 use utils::input;
 
 fn main() {
-    let input = input::read_input();
+    let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));
     println!("exercise 2: {}", exercise2(&input));
 }
@@ -179,20 +179,42 @@ impl<'a> Iterator for GridIterator<'a> {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
-    #[test]
-    fn test_ex1() {
-        let input = input::read_example();
-        let res = exercise1(&input);
-        assert_eq!(res, 18);
+    mod exercise1 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let input = input::read_file("example.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 18);
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 2483);
+        }
     }
 
-    #[test]
-    fn test_ex2() {
-        let input = input::read_example();
-        let res = exercise2(&input);
-        assert_eq!(res, 9);
+    mod exercise2 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let input = input::read_file("example.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, 9);
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, 1925);
+        }
     }
 }

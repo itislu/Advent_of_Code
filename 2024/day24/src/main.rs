@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use utils::{input, parse};
 
 fn main() {
-    let input = input::read_input();
+    let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));
     println!("exercise 2: {}", exercise2(&input));
 }
@@ -342,13 +342,42 @@ fn parse_gates(input: &str) -> HashMap<String, Gate> {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
-    #[test]
-    fn test_ex1() {
-        let input = input::read_example();
-        let res = exercise1(&input);
-        assert_eq!(res, 2024);
+    mod exercise1 {
+        use super::*;
+
+        #[test]
+        fn example1() {
+            let input = input::read_file("example1.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 4);
+        }
+
+        #[test]
+        fn example() {
+            let input = input::read_file("example.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 2024);
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 59619940979346);
+        }
+    }
+
+    mod exercise2 {
+        use super::*;
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, "bpt,fkp,krj,mfm,ngr,z06,z11,z31");
+        }
     }
 }

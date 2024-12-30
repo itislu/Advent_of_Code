@@ -6,7 +6,7 @@ use std::{
 use utils::{input, parse};
 
 fn main() {
-    let input = input::read_input();
+    let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise(&input, 2));
     println!("exercise 2: {}", exercise(&input, 25));
 }
@@ -354,20 +354,35 @@ impl Sub for Position {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
-    #[test]
-    fn test_ex1() {
-        let input = input::read_example();
-        let res = exercise(&input, 2);
-        assert_eq!(res, 126384);
+    mod exercise1 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let input = input::read_file("example.txt");
+            let res = exercise(&input, 2);
+            assert_eq!(res, 126384);
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise(&input, 2);
+            assert_eq!(res, 219366);
+        }
     }
 
-    #[test]
-    fn test_ex2() {
-        let input = input::read_example();
-        let res = exercise(&input, 25);
-        println!("{}", res);
+    mod exercise2 {
+        use super::*;
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise(&input, 25);
+            assert_eq!(res, 271631192020464);
+        }
     }
 }

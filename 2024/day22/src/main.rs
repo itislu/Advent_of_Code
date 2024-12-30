@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use utils::{input, parse};
 
 fn main() {
-    let input = input::read_input();
+    let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));
     println!("exercise 2: {}", exercise2(&input));
 }
@@ -102,20 +102,42 @@ fn prune(a: usize) -> usize {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
-    #[test]
-    fn test_ex1() {
-        let input = input::read_file("input_example1.txt");
-        let res = exercise1(&input);
-        assert_eq!(res, 37327623);
+    mod exercise1 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let input = input::read_file("example1.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 37327623);
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise1(&input);
+            assert_eq!(res, 13185239446);
+        }
     }
 
-    #[test]
-    fn test_ex2() {
-        let input = input::read_file("input_example2.txt");
-        let res = exercise2(&input);
-        assert_eq!(res, 23);
+    mod exercise2 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let input = input::read_file("example2.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, 23);
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise2(&input);
+            assert_eq!(res, 1501);
+        }
     }
 }

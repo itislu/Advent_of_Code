@@ -9,7 +9,7 @@ use strum::IntoEnumIterator;
 use utils::{colors, input};
 
 fn main() {
-    let input = input::read_input();
+    let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input, 1024));
     println!(
         "exercise 2: {}",
@@ -367,20 +367,44 @@ fn parse_obstacles(input: &str) -> VecDeque<Position> {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
-    #[test]
-    fn test_ex1() {
-        let input = input::read_example();
-        let res = exercise1(&input, 12);
-        assert_eq!(res, 22);
+    mod exercise1 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let input = input::read_file("example.txt");
+            let res = exercise1(&input, 12);
+            assert_eq!(res, 22);
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise1(&input, 1024);
+            assert_eq!(res, 334);
+        }
     }
 
-    #[test]
-    fn test_ex2() {
-        let input = input::read_example();
-        let res = exercise2(&input).expect("No obstacle prevents the exit from being reachable.");
-        assert_eq!(res, "6,1");
+    mod exercise2 {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let input = input::read_file("example.txt");
+            let res =
+                exercise2(&input).expect("No obstacle prevents the exit from being reachable.");
+            assert_eq!(res, "6,1");
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res =
+                exercise2(&input).expect("No obstacle prevents the exit from being reachable.");
+            assert_eq!(res, "20,12");
+        }
     }
 }

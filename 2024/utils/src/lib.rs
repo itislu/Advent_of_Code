@@ -3,14 +3,6 @@ pub mod input {
     use std::fs;
     use std::path;
 
-    pub fn read_input() -> String {
-        read_file("input.txt")
-    }
-
-    pub fn read_example() -> String {
-        read_file("input_example.txt")
-    }
-
     pub fn read_file(filename: &str) -> String {
         let dir = match env::var("CARGO_MANIFEST_DIR") {
             Ok(dir) => path::PathBuf::from(dir),
@@ -27,14 +19,8 @@ mod input_tests {
     use input::*;
 
     #[test]
-    fn print_read_input() {
-        let result = read_input();
-        println!("{}", result);
-    }
-
-    #[test]
-    fn print_read_example() {
-        let result = read_example();
+    fn print_read_file() {
+        let result = read_file("Cargo.toml");
         println!("{}", result);
     }
 }

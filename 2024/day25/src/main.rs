@@ -1,7 +1,7 @@
 use utils::input;
 
 fn main() {
-    let input = input::read_input();
+    let input = input::read_file("input.txt");
     println!("exercise: {}", exercise(&input));
 }
 
@@ -53,13 +53,24 @@ fn parse_locks_and_keys(input: &str) -> (Vec<Vec<u8>>, Vec<Vec<u8>>, u8) {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
 
-    #[test]
-    fn test_ex1() {
-        let input = input::read_example();
-        let res = exercise(&input);
-        assert_eq!(res, 3);
+    mod exercise {
+        use super::*;
+
+        #[test]
+        fn example() {
+            let input = input::read_file("example.txt");
+            let res = exercise(&input);
+            assert_eq!(res, 3);
+        }
+
+        #[test]
+        fn answer() {
+            let input = input::read_file("input.txt");
+            let res = exercise(&input);
+            assert_eq!(res, 3116);
+        }
     }
 }
