@@ -45,11 +45,43 @@ fn compare_bits(expected: usize, actual: usize) {
             );
         }
     }
-
     println!("expected: {:b}", expected);
     println!("  actual: {:b}", actual);
 }
 
+/*
+I know that only OUTPUT wires have been swapped, NOT input wires!
+
+z00 XOR
+    x00
+    y00
+
+z01 XOR
+    XOR
+        x01
+        y01
+    AND
+        x00
+        y00
+
+zn XOR
+    XOR
+        xn
+        yn
+    OR
+        AND
+            xn-1
+            yn-1
+        AND
+            same as zn-1
+
+z45 OR
+    AND
+        x44
+        y44
+    AND
+        same as z44
+*/
 fn collect_bad_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
     let bad_xor_gates = collect_bad_xor_gates(gates);
     let bad_and_gates = collect_bad_and_gates(gates);
@@ -172,80 +204,6 @@ fn outputs_to<'a>(
 
 fn count_operator(outputs: &[&GateData], op: Operator) -> usize {
     outputs.iter().filter(|gate| gate.op == op).count()
-}
-
-// I know that only OUTPUT wires have been swapped, NOT input wires!
-
-/*
-z00 XOR
-    x00
-    y00
-
-z01 XOR
-    XOR
-        x01
-        y01
-    AND
-        x00
-        y00
-
-zn XOR
-    XOR
-        xn
-        yn
-    OR
-        AND
-            xn-1
-            yn-1
-        AND
-            same as zn-1
-
-z45 OR
-    AND
-        x44
-        y44
-    AND
-        same as z44
-*/
-
-/*
-- If an input name for XOR and AND contains digit { half1 } else { half2 }
-*/
-
-struct HalfAdder {
-    bit: u8,
-    in1: String,
-    in2: String,
-    sum: String,
-    carry: String,
-}
-
-struct CarryOut {
-    in1: String,
-    in2: String,
-    out: String,
-}
-
-/*
-FullAdder:
-- carry_in from prev adder should be same as 1 in for half2
-- sum from half1 should be 1 in for half2
-- sum from half2 should be sum of FullAdder
-- carry from half1 should be 1 for carry_out
-- carry from half2 should be 1 for carry_out
-
-- There always is a pair of XOR and AND with same inputs belonging to same bit.
-    - Both ANDs output to the same OR.
-*/
-struct FullAdder {
-    bit: u8,
-    in1: String,
-    in2: String,
-    sum: String,
-    half1: HalfAdder,
-    half2: HalfAdder,
-    carry_in: String,
-    carry_out: String,
 }
 
 fn get_combined_number(gates: &HashMap<String, Gate>, gate_letter: char) -> usize {
