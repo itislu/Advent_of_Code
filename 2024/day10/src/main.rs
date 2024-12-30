@@ -78,11 +78,11 @@ impl std::fmt::Display for Position {
 #[derive(Clone)]
 struct Cell {
     pos: Position,
-    value: u32,
+    value: u8,
 }
 
 impl Cell {
-    fn new(row: usize, col: usize, value: u32) -> Self {
+    fn new(row: usize, col: usize, value: u8) -> Self {
         Cell {
             pos: Position::new(row, col),
             value,
@@ -108,11 +108,11 @@ impl Map {
                 line.chars()
                     .enumerate()
                     .map(|(col, ch)| {
-                        let digit = ch.to_digit(10).unwrap();
+                        let digit = ch.to_digit(10).unwrap_or(u8::MAX as u32);
                         if digit == 0 {
                             starts.push(Position::new(row, col));
                         }
-                        Cell::new(row, col, digit)
+                        Cell::new(row, col, digit as u8)
                     })
                     .collect()
             })
