@@ -1,3 +1,4 @@
+#![allow(unused_imports)]
 use std::{
     cmp::min,
     collections::{BinaryHeap, HashMap, VecDeque},
@@ -27,9 +28,9 @@ fn exercise1(input: &str, obstacle_amount: usize) -> i64 {
     }
 
     let path = dijkstra(&map).expect("No path to the goal found!");
-    #[cfg(debug_assertions)]
+    #[cfg(all(debug_assertions, not(test)))]
     {
-        print_map_with_path(&map, &path, true);
+        _print_map_with_path(&map, &path, true);
     }
     path[&map.goal].cost
 }
@@ -40,15 +41,15 @@ fn exercise2(input: &str) -> Option<String> {
     let rows = obstacles.iter().map(|pos| pos.row).max().unwrap() + 1;
     let cols = obstacles.iter().map(|pos| pos.col).max().unwrap() + 1;
     let mut map = Map::new(rows, cols);
-    let mut first_time = true;
+    let mut _first_time = true;
 
     while let Some(obstacle) = obstacles.pop_front() {
         map.put(obstacle, TileKind::Obstacle);
-        if let Some(path) = dijkstra(&map) {
-            #[cfg(debug_assertions)]
+        if let Some(_path) = dijkstra(&map) {
+            #[cfg(all(debug_assertions, not(test)))]
             {
-                print_map_with_path(&map, &path, first_time);
-                first_time = false;
+                _print_map_with_path(&map, &_path, _first_time);
+                _first_time = false;
                 thread::sleep(Duration::from_millis(10))
             }
         } else {
@@ -95,7 +96,7 @@ fn dijkstra(map: &Map) -> Option<HashMap<Position, Visit>> {
     None
 }
 
-fn print_map_with_path(map: &Map, path: &HashMap<Position, Visit>, first_time: bool) {
+fn _print_map_with_path(map: &Map, path: &HashMap<Position, Visit>, first_time: bool) {
     let mut buffer = String::with_capacity(map.grid.len() * map.grid[0].len() * 2);
 
     for row in &map.grid {
