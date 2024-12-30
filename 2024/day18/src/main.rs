@@ -9,16 +9,17 @@ use utils::{colors, input};
 
 fn main() {
     let input = input::read_input();
-    println!("exercise 1: {}", exercise1(&input, 71, 71, 1024));
+    println!("exercise 1: {}", exercise1(&input, 1024));
     println!(
         "exercise 2: {}",
-        exercise2(&input, 71, 71, 1024)
-            .expect("No obstacle prevents the exit from being reachable.")
+        exercise2(&input).expect("No obstacle prevents the exit from being reachable.")
     );
 }
 
-fn exercise1(input: &str, rows: usize, cols: usize, obstacle_amount: usize) -> i64 {
+fn exercise1(input: &str, obstacle_amount: usize) -> i64 {
     let mut obstacles: VecDeque<Position> = parse_obstacles(input);
+    let rows = obstacles.iter().map(|pos| pos.row).max().unwrap() + 1;
+    let cols = obstacles.iter().map(|pos| pos.col).max().unwrap() + 1;
     let mut map = Map::new(rows, cols);
 
     for obstacle in obstacles.drain(0..min(obstacle_amount, obstacles.len())) {
@@ -33,15 +34,13 @@ fn exercise1(input: &str, rows: usize, cols: usize, obstacle_amount: usize) -> i
     path[&map.goal].cost
 }
 
-fn exercise2(input: &str, rows: usize, cols: usize, obstacle_amount: usize) -> Option<Position> {
+fn exercise2(input: &str) -> Option<String> {
     let mut res: Option<Position> = None;
     let mut obstacles: VecDeque<Position> = parse_obstacles(input);
+    let rows = obstacles.iter().map(|pos| pos.row).max().unwrap() + 1;
+    let cols = obstacles.iter().map(|pos| pos.col).max().unwrap() + 1;
     let mut map = Map::new(rows, cols);
     let mut first_time = true;
-
-    for obstacle in obstacles.drain(0..min(obstacle_amount, obstacles.len())) {
-        map.put(obstacle, TileKind::Obstacle);
-    }
 
     while let Some(obstacle) = obstacles.pop_front() {
         map.put(obstacle, TileKind::Obstacle);
@@ -57,7 +56,7 @@ fn exercise2(input: &str, rows: usize, cols: usize, obstacle_amount: usize) -> O
             break;
         }
     }
-    res
+    Some(format!("{},{}", res?.col, res?.row))
 }
 
 fn dijkstra(map: &Map) -> Option<HashMap<Position, Visit>> {
@@ -373,15 +372,14 @@ mod test {
     #[test]
     fn test_ex1() {
         let input = input::read_example();
-        let res = exercise1(&input, 7, 7, 12);
+        let res = exercise1(&input, 12);
         assert_eq!(res, 22);
     }
 
     #[test]
     fn test_ex2() {
         let input = input::read_example();
-        let res = exercise2(&input, 7, 7, 12)
-            .expect("No obstacle prevents the exit from being reachable.");
-        assert_eq!(res, Position::new(1, 6));
+        let res = exercise2(&input).expect("No obstacle prevents the exit from being reachable.");
+        assert_eq!(res, "6,1");
     }
 }
