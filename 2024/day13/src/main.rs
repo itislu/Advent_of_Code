@@ -168,14 +168,14 @@ impl Mul<i64> for Position {
 
 fn parse_input(input: &str) -> impl Iterator<Item = (Button, Button, Position)> + '_ {
     input.split("\n\n").map(|block| {
-        let numbers: Vec<Vec<i64>> = block
+        let numbers: Vec<Vec<u64>> = block
             .lines()
             .map(|line| parse::numbers(line).collect())
             .collect();
         (
-            Button::new(numbers[0][0], numbers[0][1], 0, COST_A),
-            Button::new(numbers[1][0], numbers[1][1], 0, COST_B),
-            Position::new(numbers[2][0], numbers[2][1]),
+            Button::new(numbers[0][0] as i64, numbers[0][1] as i64, 0, COST_A),
+            Button::new(numbers[1][0] as i64, numbers[1][1] as i64, 0, COST_B),
+            Position::new(numbers[2][0] as i64, numbers[2][1] as i64),
         )
     })
 }
