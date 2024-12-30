@@ -37,13 +37,15 @@ fn remote_control(
     cache: &mut HashMap<(DirKey, DirKey, u32), usize>,
     indirections: u32,
 ) -> usize {
-    #[cfg(debug_assertions)]
-    println!(
-        "indirections: {:2}, len: {}, {:?}",
-        indirections,
-        dir_code.len(),
-        dir_code
-    );
+    #[cfg(all(debug_assertions, not(test)))]
+    {
+        println!(
+            "indirections: {:2}, len: {}, {:?}",
+            indirections,
+            dir_code.len(),
+            dir_code
+        );
+    }
 
     if indirections == 0 {
         return dir_code.len();
@@ -53,14 +55,16 @@ fn remote_control(
 
     for &button in dir_code {
         if let Some(cached_len) = cache.get(&(dirpad.current, button, indirections - 1)) {
-            #[cfg(debug_assertions)]
-            println!(
-                "CACHE HIT: (cur: {}, target: {}, indirections: {}), len: {}",
-                dirpad.current,
-                button,
-                indirections - 1,
-                cached_len
-            );
+            #[cfg(all(debug_assertions, not(test)))]
+            {
+                println!(
+                    "CACHE HIT: (cur: {}, target: {}, indirections: {}), len: {}",
+                    dirpad.current,
+                    button,
+                    indirections - 1,
+                    cached_len
+                );
+            }
             dirpad.current = button;
             len += cached_len;
         } else {
