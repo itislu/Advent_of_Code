@@ -1,3 +1,5 @@
+<div align="center">
+
 | Day | Title | Part 1 | Part 2 |
 | --- | --------- | ------ | ------ |
 | [Day 1](day01) | Historian Hysteria | Given two lists of numbers, pair smallest-to-smallest and sum the absolute differences between pairs. | For each number in left list, multiply it by its frequency in right list and sum all products. |
@@ -27,3 +29,5 @@
 | [Day 25](day25) | Code Chronicle | Analyze lock/key schematics to find how many unique pairs fit together without overlap. Each lock/key is represented as columns of `#` extending down/up. | No actual puzzle - just a story conclusion. Free star after completing all previous 49 puzzles. |
 
 [![2024](https://github.com/user-attachments/assets/84eef378-df05-4206-9858-fc728f805866)](https://adventofcode.com/2024)
+
+</div>
