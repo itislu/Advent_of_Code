@@ -15,9 +15,9 @@ fn main() {
 }
 
 /*
-for each K:
-    for each V:
-        is any other V in values of V?
+    for each K:
+        for each V:
+            is any other V in values of V?
 */
 fn exercise1(input: &str) -> usize {
     let network = parse_network(input);
@@ -28,8 +28,8 @@ fn exercise1(input: &str) -> usize {
 }
 
 /*
-Find maximal clique for each node.
-Keep it if it is bigger than the biggest so far.
+    Find maximal clique for each node.
+    Keep it if it is bigger than the biggest so far.
 */
 fn exercise2(input: &str) -> String {
     let network = parse_network(input);

@@ -56,37 +56,37 @@ fn compare_bits(expected: usize, actual: usize) {
 }
 
 /*
-I know that only OUTPUT wires have been swapped, NOT input wires!
+    I know that only OUTPUT wires have been swapped, NOT input wires!
 
-z00 XOR
-    x00
-    y00
-
-z01 XOR
-    XOR
-        x01
-        y01
-    AND
+    z00 XOR
         x00
         y00
 
-zn XOR
-    XOR
-        xn
-        yn
-    OR
+    z01 XOR
+        XOR
+            x01
+            y01
         AND
-            xn-1
-            yn-1
-        AND
-            same as zn-1
+            x00
+            y00
 
-z45 OR
-    AND
-        x44
-        y44
-    AND
-        same as z44
+    zn XOR
+        XOR
+            xn
+            yn
+        OR
+            AND
+                xn-1
+                yn-1
+            AND
+                same as zn-1
+
+    z45 OR
+        AND
+            x44
+            y44
+        AND
+            same as z44
 */
 fn collect_bad_gates(gates: &HashMap<String, Gate>) -> Vec<&GateData> {
     let bad_xor_gates = collect_bad_xor_gates(gates);

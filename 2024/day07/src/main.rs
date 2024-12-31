@@ -13,10 +13,11 @@ fn main() {
 }
 
 /*
-Let's say we have 4 numbers - that means 3 spaces for operators.
-How to get all permutations of what these 3 operators could be?
-Well, there are 2^3 permutations possible. By counting down from 2^3 it will get all the possible bit patterns lower than the original pattern.
-To read the bit pattern, just read all the bits of the punch card: a 1 means multiplication, a 0 addition.
+    Let's say we have 4 numbers - that means 3 spaces for operators.
+    How to get all permutations of what these 3 operators could be?
+    Well, there are 2^3 permutations possible. By counting down from 2^3 we will get all the possible bit patterns
+    lower than the original pattern.
+    To read the bit pattern, just read all the bits of the punch card: a 1 means multiplication, a 0 addition.
 */
 fn exercise1(input: &str) -> i64 {
     let mut res: i64 = 0;
