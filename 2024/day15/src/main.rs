@@ -1,6 +1,13 @@
 use std::collections::VecDeque;
 use utils::input;
 
+/*
+    Warehouse Woes - Day 15
+    Part 1: Track a robot (@) pushing boxes (O) around a warehouse according to movement instructions (^v<>).
+            Calculate sum of box GPS coordinates (row * 100 + col) after all moves.
+    Part 2: Same as part 1, but with double-width warehouse and boxes ([]). Robot stays same size.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

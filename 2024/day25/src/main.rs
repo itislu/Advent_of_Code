@@ -1,5 +1,12 @@
 use utils::input;
 
+/*
+    Code Chronicle - Day 25
+    Part 1: Analyze lock/key schematics to find how many unique pairs fit together without overlap.
+            Each lock/key is represented as columns of '#' extending down/up.
+    Part 2: No actual puzzle - just a story conclusion. Free star after completing all previous 49 puzzles.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise: {}", exercise(&input));

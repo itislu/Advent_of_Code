@@ -3,6 +3,12 @@ use itertools::Itertools;
 use std::{collections::HashMap, iter};
 use utils::{colors, input};
 
+/*
+    Race Condition - Day 20
+    Part 1: Find number of possible 2-tile wall-passing cheats that save >= 100 picoseconds vs normal path.
+    Part 2: Same as part 1, but with up to 20-tile wall-passing cheats.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input, 100));

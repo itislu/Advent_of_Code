@@ -1,5 +1,12 @@
 use utils::input;
 
+/*
+    Restroom Redoubt - Day 14
+    Part 1: Predict positions of robots moving in straight lines that wrap around edges after 100 movements.
+            Then multiply number of robots in each quadrant.
+    Part 2: Find minimum movements needed for robots to form a Christmas tree pattern.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

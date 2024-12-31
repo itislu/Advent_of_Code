@@ -1,6 +1,13 @@
 use std::ops::Not;
 use utils::input;
 
+/*
+    Guard Gallivant - Day 6
+    Part 1: Track path of guard following simple movement rules (turn right if blocked, else move forward)
+            and count distinct positions visited before leaving map.
+    Part 2: Find number of possible positions where placing an obstacle would trap guard in infinite loop.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

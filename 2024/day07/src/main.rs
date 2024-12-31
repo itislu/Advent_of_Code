@@ -1,5 +1,11 @@
 use utils::input;
 
+/*
+    Bridge Repair - Day 7
+    Part 1: Find equations that can be solved using + and * operators (left-to-right evaluation) and sum their test values.
+    Part 2: Same as part 1, but also including || (concatenation) operator.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

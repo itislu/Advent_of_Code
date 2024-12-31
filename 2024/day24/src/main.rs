@@ -1,6 +1,12 @@
 use std::collections::HashMap;
 use utils::{input, parse};
 
+/*
+    Crossed Wires - Day 24
+    Part 1: Simulate boolean logic gates (AND, OR, XOR) with initial values on x-wires and y-wires to compute final decimal number on z-wires.
+    Part 2: Find 4 pairs of swapped gate outputs to make the circuit correctly perform binary addition.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

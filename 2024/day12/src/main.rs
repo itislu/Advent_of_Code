@@ -7,6 +7,12 @@ use strum::IntoEnumIterator;
 use strum_macros::Display;
 use utils::input;
 
+/*
+    Garden Groups - Day 12
+    Part 1: Calculate total price of fencing garden regions by multiplying each region's area by its perimeter.
+    Part 2: Same as part 1, but instead of perimeter, use total number of distinct fence sides regardless of length.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

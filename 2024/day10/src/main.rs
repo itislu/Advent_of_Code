@@ -2,6 +2,12 @@ use itertools::Itertools;
 use strum::IntoEnumIterator;
 use utils::input;
 
+/*
+    Hoof It - Day 10
+    Part 1: Find trailheads (height 0) and count how many height-9 positions each can reach via paths that increase by 1. Sum all scores.
+    Part 2: For each trailhead, count number of distinct possible paths to any height-9 position. Sum all these counts.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

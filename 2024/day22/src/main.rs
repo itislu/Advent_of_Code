@@ -1,6 +1,14 @@
 use std::collections::HashMap;
 use utils::{input, parse};
 
+/*
+    Monkey Market - Day 22
+    Part 1: Given a list of initial numbers, calculate each number's 2000th generation using a specific transformation process,
+            then sum all 2000th numbers.
+    Part 2: Convert each generated number to its ones digit to get prices. Find the sequence of 4 price changes that, when applied
+            to all buyers' price histories, results in the highest sum of prices at the points where that sequence first appears.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

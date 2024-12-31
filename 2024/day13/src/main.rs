@@ -2,6 +2,12 @@ use itertools::Itertools;
 use std::ops::{Add, Mul};
 use utils::{input, parse};
 
+/*
+    Claw Contraption - Day 13
+    Part 1: Find minimum tokens needed to win prizes by pressing A (3 tokens) and B (1 token) buttons that move claw by X,Y amounts to reach prize coordinates.
+    Part 2: Same but with prize coordinates increased by 10^13 on both X and Y axes.
+*/
+
 const COST_A: i64 = 3;
 const COST_B: i64 = 1;
 const MAX_PRESSES: i64 = 100;

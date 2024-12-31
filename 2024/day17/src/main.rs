@@ -1,6 +1,12 @@
 use itertools::Itertools;
 use utils::{input, parse};
 
+/*
+    Chronospatial Computer - Day 17
+    Part 1: Run a 3-bit computer program with given register values and instructions and output the sequence of results.
+    Part 2: Find lowest initial value for register A that makes the program output itself.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

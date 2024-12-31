@@ -5,6 +5,13 @@ use std::{
 };
 use utils::{input, parse};
 
+/*
+    Keypad Conundrum - Day 21
+    Part 1: Control a chain of 3 robots (using directional keypads) to input codes on a numeric keypad.
+            Calculate sum of complexities (sequence_length * numeric_code) of the codes at the end of the chain.
+    Part 2: Same as part 1, but with 26 robots in the chain instead of 3.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise(&input, 2));

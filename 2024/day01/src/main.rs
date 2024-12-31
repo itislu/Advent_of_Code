@@ -1,5 +1,11 @@
 use utils::input;
 
+/*
+    Historian Hysteria - Day 1
+    Part 1: Given two lists of numbers, pair smallest-to-smallest and sum the absolute differences between pairs.
+    Part 2: For each number in left list, multiply it by its frequency in right list and sum all products.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

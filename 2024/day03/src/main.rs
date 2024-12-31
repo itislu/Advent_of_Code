@@ -1,6 +1,12 @@
 use regex::Regex;
 use utils::input;
 
+/*
+    Mull It Over - Day 3
+    Part 1: Find valid mul(X,Y) instructions in corrupted text and sum their products.
+    Part 2: Same but respect do()/don't() instructions that enable/disable multiplication operations.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

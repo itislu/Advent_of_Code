@@ -7,6 +7,12 @@ use std::{
 };
 use utils::input;
 
+/*
+    Resonant Collinearity - Day 8
+    Part 1: Count unique antinode locations where two same-frequency antennas are aligned with one being twice as far as the other.
+    Part 2: Count unique antinode locations where any two or more same-frequency antennas are aligned, regardless of distance.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));
@@ -20,10 +26,12 @@ fn exercise1(input: &str) -> usize {
 
     for antennas in map.antennas.values() {
         for combination in antennas.iter().combinations(2) {
-            /* `combination` is a `Vec<&Rc<RefCell<Point>>>`.
+            /* 
+            `combination` is a `Vec<&Rc<RefCell<Point>>>`.
             `Rc` is a reference counter, `RefCell` a dynamic borrow checker.
             First index into the vector, then dereference the `Rc`, then use `borrow()` to borrow the value from the `RefCell`, and then pass a reference to that value.
-            This would lead to `&*combination[0]`, but Rust is able to dereference this automatically. */
+            This would lead to `&*combination[0]`, but Rust is able to dereference this automatically. 
+            */
             antinodes.extend(get_antinodes1(
                 &combination[0].borrow(),
                 &combination[1].borrow(),

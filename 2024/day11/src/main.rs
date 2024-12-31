@@ -1,6 +1,13 @@
 use std::collections::{HashMap, HashSet};
 use utils::input;
 
+/*
+    Plutonian Pebbles - Day 11
+    Part 1: Transform stones with numbers according to rules (if 0 -> 1, if even digits -> split in half, else -> multiply by 2024)
+            for 25 iterations and count resulting amount of stones.
+    Part 2: Same as part 1, but for 75 iterations.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

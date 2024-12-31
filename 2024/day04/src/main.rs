@@ -1,6 +1,12 @@
 use strum::IntoEnumIterator;
 use utils::input;
 
+/*
+    Ceres Search - Day 4
+    Part 1: Count occurrences of 'XMAS' in a grid (horizontal, vertical, diagonal, forwards/backwards).
+    Part 2: Count occurrences of X-shaped 'MAS' patterns (two 'MAS' strings forming an X shape).
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

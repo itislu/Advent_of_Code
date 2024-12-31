@@ -1,6 +1,12 @@
 use std::collections::HashMap;
 use utils::input;
 
+/*
+    Linen Layout - Day 19
+    Part 1: Count how many towel designs are possible to make using given pattern pieces.
+    Part 2: Count total number of different ways each possible design can be made.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

@@ -2,6 +2,12 @@ use itertools::Itertools;
 use std::collections::{HashMap, HashSet};
 use utils::input;
 
+/*
+    LAN Party - Day 23
+    Part 1: Count sets of 3 interconnected computers where at least one computer name starts with 't'.
+    Part 2: Find the largest set of fully interconnected computers where each computer directly connects to all others in the set.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

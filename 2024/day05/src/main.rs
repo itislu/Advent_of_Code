@@ -1,6 +1,13 @@
 use std::cmp::Ordering;
 use utils::input;
 
+/*
+    Print Queue - Day 5
+    Part 1: Given a list of page ordering rules (X|Y means X must come before Y) and sequences of page numbers,
+            find correctly ordered sequences and sum their middle numbers.
+    Part 2: Take incorrectly ordered sequences, reorder them according to rules, and sum their middle numbers.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

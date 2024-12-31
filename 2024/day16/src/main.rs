@@ -4,6 +4,12 @@ use std::{
 };
 use utils::input;
 
+/*
+    Reindeer Maze - Day 16
+    Part 1: Find lowest possible score to reach the end of a maze (1 point per step, 1000 points per turn).
+    Part 2: Count how many tiles are part of any optimal (lowest-score) path through the maze.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

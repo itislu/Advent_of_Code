@@ -1,5 +1,11 @@
 use utils::input;
 
+/*
+    Red-Nosed Reports - Day 2
+    Part 1: Count sequences where numbers are strictly increasing/decreasing by 1-3.
+    Part 2: Same as part 1, but allow removing one number to make sequence valid.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));

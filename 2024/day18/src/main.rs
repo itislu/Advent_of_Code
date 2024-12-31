@@ -8,6 +8,13 @@ use std::{
 use strum::IntoEnumIterator;
 use utils::{colors, input};
 
+/*
+    RAM Run - Day 18
+    Part 1: Find shortest path from top left corner to bottom right corner in a grid where coordinates are getting corrupted by falling bytes.
+            Must avoid corrupted spots and stay within bounds.
+    Part 2: Find coordinates of the first falling byte that makes it impossible to reach the exit.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input, 1024));

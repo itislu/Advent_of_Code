@@ -2,6 +2,12 @@ use core::fmt;
 use std::mem::swap;
 use utils::input;
 
+/*
+    Disk Fragmenter - Day 9
+    Part 1: Move file blocks one at a time from end to leftmost free space and calculate checksum (position * file ID sum).
+    Part 2: Same as part 1, but move entire files instead of blocks, from highest to lowest file ID.
+*/
+
 fn main() {
     let input = input::read_file("input.txt");
     println!("exercise 1: {}", exercise1(&input));
