@@ -194,3 +194,104 @@ pub mod colors {
     pub const BOLD_BRIGHT_MAGENTA: &str = "\x1B[1;95m";
     pub const BOLD_BRIGHT_CYAN: &str = "\x1B[1;96m";
 }
+
+// #[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
+// enum Direction {
+//     Up,
+//     Down,
+//     Right,
+//     Left,
+// }
+
+// impl Direction {
+//     fn clockwise(&self) -> Self {
+//         match self {
+//             Direction::Up => Direction::Right,
+//             Direction::Right => Direction::Down,
+//             Direction::Down => Direction::Left,
+//             Direction::Left => Direction::Up,
+//         }
+//     }
+
+//     fn counter_clockwise(&self) -> Self {
+//         match self {
+//             Direction::Up => Direction::Left,
+//             Direction::Left => Direction::Down,
+//             Direction::Down => Direction::Right,
+//             Direction::Right => Direction::Up,
+//         }
+//     }
+// }
+
+// impl std::fmt::Display for Direction {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         write!(
+//             f,
+//             "{}",
+//             match self {
+//                 Direction::Up => '^',
+//                 Direction::Down => 'v',
+//                 Direction::Right => '>',
+//                 Direction::Left => '<',
+//             }
+//         )
+//     }
+// }
+
+// #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+// struct Position {
+//     row: usize,
+//     col: usize,
+// }
+
+// impl Position {
+//     fn new(row: usize, col: usize) -> Self {
+//         Self { row, col }
+//     }
+
+//     fn neighbors(&self) -> impl Iterator<Item = Self> {
+//         [
+//             Self::new(self.row - 1, self.col),
+//             Self::new(self.row + 1, self.col),
+//             Self::new(self.row, self.col + 1),
+//             Self::new(self.row, self.col - 1),
+//         ]
+//         .into_iter()
+//     }
+
+//     fn to(&self, direction: Direction) -> Self {
+//         match direction {
+//             Direction::Up => Self::new(self.row - 1, self.col),
+//             Direction::Down => Self::new(self.row + 1, self.col),
+//             Direction::Right => Self::new(self.row, self.col + 1),
+//             Direction::Left => Self::new(self.row, self.col - 1),
+//         }
+//     }
+
+//     fn dir(&self, from: Position) -> Direction {
+//         let row_diff = if self.row >= from.row {
+//             self.row - from.row
+//         } else {
+//             from.row - self.row
+//         };
+//         let col_diff = if self.col >= from.col {
+//             self.col - from.col
+//         } else {
+//             from.col - self.col
+//         };
+
+//         if col_diff >= row_diff {
+//             if self.col >= from.col {
+//                 Direction::Right
+//             } else {
+//                 Direction::Left
+//             }
+//         } else {
+//             if self.row <= from.row {
+//                 Direction::Up
+//             } else {
+//                 Direction::Down
+//             }
+//         }
+//     }
+// }
