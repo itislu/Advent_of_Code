@@ -114,7 +114,7 @@ impl<'a> GridIterator<'a> {
     }
 }
 
-impl<'a> Iterator for GridIterator<'a> {
+impl Iterator for GridIterator<'_> {
     type Item = String;
 
     fn next(&mut self) -> Option<Self::Item> {
