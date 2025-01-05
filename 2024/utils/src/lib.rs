@@ -5,19 +5,23 @@ pub mod input {
     use std::path;
 
     pub fn read_file(filename: &str) -> String {
-        let dir = current_day_dir().expect("Failed to get directory of current day");
+        let dir = current_mod_dir().expect("Failed to get directory of current module");
         let path = dir.join(filename);
         fs::read_to_string(&path)
             .unwrap_or_else(|_| panic!("Failed to read file {}", path.display()))
     }
 
-    fn current_day_dir() -> io::Result<path::PathBuf> {
+    fn current_mod_dir() -> io::Result<path::PathBuf> {
         let cwd = env::current_dir()?;
         let exe = env::current_exe()?;
-        let day = exe
+        let module = exe
             .file_name()
             .and_then(|f| f.to_str())
-            .and_then(|s| s.get(0..5))
+            .map(|s| {
+                s.chars()
+                    .take_while(|c| c.is_alphanumeric())
+                    .collect::<String>()
+            })
             .unwrap_or_default();
         let mut res = cwd.clone();
 
@@ -37,7 +41,7 @@ pub mod input {
                 break;
             }
         }
-        res.push(day);
+        res.push(module);
         Ok(res)
     }
 
@@ -86,6 +90,12 @@ pub mod input {
         if let Ok(out_dir) = env::var("OUT_DIR") {
             eprintln!("\n=== OUT_DIR ===");
             eprintln!("{}", out_dir);
+        }
+
+        // 9. Current module directory (custom)
+        if let Ok(mod_dir) = current_mod_dir() {
+            eprintln!("\n=== current_mod_dir() ===");
+            eprintln!("{:?}", mod_dir);
         }
 
         eprintln!();
