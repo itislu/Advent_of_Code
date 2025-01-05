@@ -41,8 +41,7 @@ pub mod input {
         Ok(res)
     }
 
-    #[allow(dead_code)]
-    fn debug_paths() {
+    pub fn debug_paths() {
         // 1. CARGO_MANIFEST_DIR
         if let Ok(manifest_dir) = env::var("CARGO_MANIFEST_DIR") {
             eprintln!("\n=== CARGO_MANIFEST_DIR ===");
@@ -102,6 +101,11 @@ mod input_tests {
     fn print_read_file() {
         let result = read_file("Cargo.toml");
         println!("{}", result);
+    }
+
+    #[test]
+    fn debug_paths() {
+        input::debug_paths();
     }
 }
 
