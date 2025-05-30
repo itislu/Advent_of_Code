@@ -1,0 +1,14 @@
+*
+!*/
+!*.jpg
+!*.md
+!*.pdf
+!*.txt
+!.devcontainer/**
+!.gitignore
+
+# rust
+target
+!*.lock
+!*.rs
+!*.toml
